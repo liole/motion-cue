@@ -73,3 +73,27 @@ button.main, input.main {
     height: auto;
     overflow: visible;
 }
+
+.box {
+    background-color: #88aa8866;
+    color: #fff;
+    backdrop-filter: blur(5px);
+    box-shadow: 1px 1px 5px #3338;
+    border: none;
+    text-align: center;
+}
+
+#connect-box {
+    display: none;
+    position: absolute;
+    left: 50%;
+    margin-left: -170px;
+    top: 100px;
+    padding: 20px;
+    width: 340px;
+}
+
+#connect-box .box-label {
+    margin: 10px 0px 20px;
+    font-size: 24px;
+}

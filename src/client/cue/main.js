@@ -2,6 +2,10 @@ var socket = io();
 
 var init = false;
 
+socket.on('connect', function() {
+    socket.emit('cue', { id: getID() });
+});
+
 document.getElementById('cue').addEventListener('touchstart', function(e) {
     init = true;
     window.addEventListener('deviceorientation', sendCue);
@@ -29,15 +33,18 @@ function sendBall(e) {
 }
 
 function getMessage(event, type) {
-    var id = location.hash.substr(1);
     return {
-        id: id,
+        id: getID(),
         type: type,
         init: init,
         alpha: rad(event.alpha),
         beta: rad(event.beta),
         gamma: rad(event.gamma)
     };
+}
+
+function getID() {
+    return location.hash.substr(1);
 }
 
 function rad(deg) {

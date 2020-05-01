@@ -37,7 +37,7 @@ export class Game {
     render() {
         var table = dom('#table');
         if (!table.get('viewBox')) {
-            table.set('viewBox', '0 0 100 60');
+            table.set('viewBox', '0 0 100 50');
         }
         this.cue.render(table);
     }

@@ -20,11 +20,15 @@ io.on('connection', (socket) => {
         callback({ id });
     });
 
+    socket.on('cue', data => {
+        io.to(data.id).emit('cue');
+    });
+
     socket.on('control', data => {
         var id = data.id;
         delete data.id;
         io.to(id).emit('control', data);
-    })
+    });
 });
 
 http.listen(process.env.PORT, () => {

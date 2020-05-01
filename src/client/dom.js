@@ -12,6 +12,15 @@ var extensions = {
         while (this.firstChild) {
             this.removeChild(this.lastChild);
         }
+    },
+    show() {
+        this.style.display = 'block';
+    },
+    hide() {
+        this.style.display = 'none';
+    },
+    css(style) {
+        Object.assign(this.style, style);
     }
 };
 
