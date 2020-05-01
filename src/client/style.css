@@ -71,4 +71,5 @@ button.main, input.main {
 #table {
     width: 100%;
     height: auto;
+    overflow: visible;
 }

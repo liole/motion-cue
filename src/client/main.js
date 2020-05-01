@@ -3,7 +3,6 @@ import { Game, games } from '/game.js';
 
 var socket = io();
 var game = undefined;
-var frame = undefined;
 
 dom('#init-create').on('click', e => {
     var container = dom('#type');
@@ -26,21 +25,17 @@ dom('#init-join').on('click', e => {
     dom('#join-id').focus();
 });
 
+socket.on('control', event => {
+    game.handle(event);
+})
+
 function createGame(type) {
     socket.emit('create', { type }, ({ id }) => {
         game = Game[type];
         game.id = id;
-        render();
+        game.render();
         dom('body').className = 'game';
     });
-}
-
-function render() {
-    if (!frame) {
-        frame = requestAnimationFrame(timestamp => {
-            game.render();
-        })
-    }
 }
 
 socket.on('connect', () => {

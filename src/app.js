@@ -19,6 +19,12 @@ io.on('connection', (socket) => {
         console.log(`A new game created. (ID=${id})`);
         callback({ id });
     });
+
+    socket.on('control', data => {
+        var id = data.id;
+        delete data.id;
+        io.to(id).emit('control', data);
+    })
 });
 
 http.listen(process.env.PORT, () => {
