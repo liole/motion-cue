@@ -1,0 +1,10 @@
+{
+    "name": "billiard-live",
+    "version": "0.0.1",
+    "description": "Billiard simulation with gesture control",
+    "scripts": {},
+    "dependencies": {
+        "express": "^4.17.1",
+        "socket.io": "^2.3.0"
+    }
+}
