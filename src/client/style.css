@@ -1,0 +1,74 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    background: repeating-linear-gradient( -45deg, #075, #075 20px, #064 20px, #064 40px );
+    font-family: Helvetica, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.page {
+    display: none;
+    margin: auto;
+}
+
+.init #init.page {
+    display: block;
+}
+
+.type #type.page {
+    display: block;
+}
+
+.join #join.page {
+    display: block;
+}
+
+.game #game.page {
+    display: block;
+}
+
+.page.basic {
+    width: 300px;
+    padding-top: 200px;
+    text-align: center;
+}
+
+button, input {
+    background-color: #88aa8866;
+    color: #fff;
+    outline: none;
+    backdrop-filter: blur(5px);
+    box-shadow: 1px 1px 5px #3338;
+    border: none;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+    transition: all .5s;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:hover, button:focus, input:focus {
+    background-color: #88bb7788;
+    box-shadow: 4px 4px 10px #3338;
+}
+
+button.main, input.main {
+    font-size: 40px;
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 300px;
+    z-index: -1;
+}
+
+#table {
+    width: 100%;
+    height: auto;
+}

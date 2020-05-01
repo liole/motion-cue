@@ -1,12 +1,23 @@
 <!doctype html>
 <html>
   <head>
-    <title>Laser pointer</title>
+    <title>Billiard Live</title>
     <script src="socket.io/socket.io.js" type="text/javascript"></script>
     <script src="main.js" type="module"></script>
     <link rel="stylesheet" href="style.css" type="text/css" />
   </head>
-  <body>
-      <div id="app"></div>
+  <body class="init">
+    <div class="page basic" id="init">
+      <button class="main" id="init-create">CREATE</button>
+      <button class="main" id="init-join">JOIN</button>
+    </div>
+    <div class="page basic" id="type">
+    </div>
+    <div class="page basic" id="join">
+      <input class="main" id="join-id" />
+    </div>
+    <div class="page" id="game">
+      <svg id="table"></svg>
+    </div>
   </body>
 </html>

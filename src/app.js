@@ -10,16 +10,14 @@ app.use('/', express.static(__dirname + '/client'));
 io.on('connection', (socket) => {
     console.log(`A new user connected. (ID=${socket.id})`);
 
-    socket.on('create', data => {
+    socket.on('create', (data, callback) => {
         var game = {
-            type: data.type,
-            players: [
-                {  id: socket.id }
-            ]
+            type: data.type
         };
-        var id = storage.createGame(game);
+        var id = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        storage.createGame(id, game);
         console.log(`A new game created. (ID=${id})`);
-        socket.emit('created', { id });
+        callback({ id });
     });
 });
 
