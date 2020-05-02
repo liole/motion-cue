@@ -1,5 +1,5 @@
-import dom from '/dom.js';
-import { Game, games } from '/game.js';
+import dom from './dom.js';
+import { Game, games } from './game.js';
 
 var socket = io();
 var game = undefined;

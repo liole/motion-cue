@@ -6,21 +6,31 @@ socket.on('connect', function() {
     socket.emit('cue', { id: getID() });
 });
 
-document.getElementById('cue').addEventListener('touchstart', function(e) {
-    init = true;
-    window.addEventListener('deviceorientation', sendCue);
+document.addEventListener('DOMContentLoaded', function() {
+
+    document.getElementById('cue').addEventListener('touchstart', function(e) {
+        init = true;
+        window.addEventListener('deviceorientation', sendCue);
+    });
+    document.getElementById('cue').addEventListener('touchend', function(e) {
+        window.removeEventListener('deviceorientation', sendCue);
+        init = null;
+        sendCue({});
+    });
+        
+    document.getElementById('ball').addEventListener('touchstart', function(e) {
+        init = true;
+        window.addEventListener('deviceorientation', sendBall);
+    });
+    document.getElementById('ball').addEventListener('touchend', function(e) {
+        window.removeEventListener('deviceorientation', sendBall);
+        init = null;
+        sendBall({});
+    });
+
 });
-document.getElementById('cue').addEventListener('touchend', function(e) {
-    window.removeEventListener('deviceorientation', sendCue);
-});
-    
-document.getElementById('ball').addEventListener('touchstart', function(e) {
-    init = true;
-    window.addEventListener('deviceorientation', sendBall);
-});
-document.getElementById('ball').addEventListener('touchend', function(e) {
-    window.removeEventListener('deviceorientation', sendBall);
-});
+
+
 
 function sendCue(e) {
     socket.emit('control', getMessage(e, 'cue'));

@@ -1,5 +1,5 @@
-import { shift } from '/utils.js';
-import dom from  '/dom.js';
+import { shift } from './../utils.js';
+import dom from  './../dom.js';
 
 export class Cue {
 
@@ -21,11 +21,11 @@ export class Cue {
     }
 
     render(root) {
-        if (!this.elem || !root.contains(this.elem)) {
-            this.elem = dom.svg('polygon', {
+        if (!this.$cue) {
+            this.$cue = dom.svg('polygon', {
                 style: `fill: ${this.color}`
-            })
-            root.append(this.elem);
+            });
+            root.append(this.$cue);
         }
 
         let start = { x: this.x, y: this.y };
@@ -38,9 +38,9 @@ export class Cue {
             shift(start, this.angle + Math.PI / 2, this.width[0] / 2)
         ];
 
-        this.elem.set('points', points.map(p => `${p.x}, ${p.y}`).join(' '));
+        this.$cue.set('points', points.map(p => `${p.x}, ${p.y}`).join(' '));
 
-        return this.elem;
+        return [this.$cue];
     }
 
 }
