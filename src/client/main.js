@@ -44,6 +44,7 @@ function startGame(type, id) {
     game.render();
     dom('body').className = 'game';
     showConnectBox();
+    window.game = game;
 }
 
 async function showConnectBox() {

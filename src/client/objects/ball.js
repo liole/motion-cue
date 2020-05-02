@@ -1,0 +1,85 @@
+import dom from './../dom.js';
+
+export class Ball {
+
+    constructor(radius, color) {
+        this.radius = radius;
+        this.color = color;
+        this.reset({ x: 50, y: 25 });
+    }
+
+    reset(point) {
+        this.x = point.x;
+        this.y = point.y;
+        this.velocity = { x: 0, y: 0};
+        this.spin = { x: 0, y: 0, z: 0 };
+    }
+
+    get isMoving() {
+        let eps = 1;
+        return Math.abs(this.velocity.x) > eps ||
+            Math.abs(this.velocity.y) > eps ||
+            Math.abs(this.spin.x) > eps ||
+            Math.abs(this.spin.y) > eps ||
+            Math.abs(this.spin.z) > eps;
+    }
+
+    simulate(dt) {
+        return simulate(this, dt);
+    }
+
+    move(dt, data = this.simulate(dt)) {
+        this.x = data.x;
+        this.y = data.y;
+        this.velocity = data.velocity;
+        this.spin = data.spin;
+    }
+
+    render(root) {
+        if (!this.$ball) {
+            this.$ball = dom.svg('circle', {
+                style: `fill: ${this.color}`
+            });
+            this.$ball.set('r', this.radius);
+            root.append(this.$ball);
+        }
+
+        this.$ball.set('cx', this.x);
+        this.$ball.set('cy', this.y);
+
+        return [this.$ball];
+    }
+
+}
+
+Ball.snooker = (color = '#fff') => new Ball(0.724, color);
+
+Ball.snookerRedN = n => [
+    Ball.snooker(),
+    Ball.snooker('#ffff00'),
+    Ball.snooker('#00cc00'),
+    Ball.snooker('#996633'),
+    Ball.snooker('#0000ff'),
+    Ball.snooker('#fb5f87'),
+    Ball.snooker('#000000'),
+    ...new Array(n).fill().map(() => Ball.snooker('#dd0000'))
+];
+
+Ball.snookerAll = Ball.snookerRedN(15);
+Ball.snookerShort = Ball.snookerRedN(10);
+
+function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25, k = 2, kz = 0.05) {
+    return {
+        x: x + velocity.x * dt,
+        y: y + velocity.y * dt,
+        velocity: {
+            x: velocity.x - Math.sign(velocity.x - spin.x * radius) * dt * k + velocity.y * spin.z * radius * dt * kz - (velocity.x - spin.x * radius) * dt * fv,
+            y: velocity.y - Math.sign(velocity.y - spin.y * radius) * dt * k - velocity.x * spin.z * radius * dt * kz - (velocity.y - spin.y * radius) * dt * fv
+        },
+        spin: {
+            x: spin.x - Math.sign(spin.x - velocity.x / radius) * dt * k - spin.x * dt * fs,
+            y: spin.y - Math.sign(spin.y - velocity.y / radius) * dt * k - spin.y * dt * fs,
+            z: spin.z - Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) * spin.z / radius * dt * kz - spin.z * dt * fs
+        }
+    };
+}

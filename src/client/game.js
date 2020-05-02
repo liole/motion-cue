@@ -1,13 +1,28 @@
 import { Cue } from './objects/cue.js';
+import { Table } from './objects/table.js';
+import { Ball } from './objects/ball.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
 
 export class Game {
 
-    constructor(type, cue) {
+    constructor(type, table, cue, balls) {
         this.type = type;
+        this.table = table;
         this.cue = cue;
+        this.balls = balls;
         this.spinControl = SpinControl.default;
+
+        this.table.resetBalls(this.balls);
+        this.aimCue(Math.PI / 4);
+    }
+
+    get cueBall() {
+        return this.balls[0];
+    }
+
+    aimCue(angle) {
+        this.cue.aim(this.cueBall.x, this.cueBall.y, angle, this.cueBall.radius * 2);
     }
 
     handle(event) {
@@ -26,7 +41,7 @@ export class Game {
         switch (event.type) {
             case 'cue':
                 var angle = this.init.cue.angle + event.alpha - this.init.angle.alpha;
-                this.cue.aim(50, 30, angle, 3);
+                this.aimCue(angle);
                 break;
             case 'ball':
                 var x = this.init.ball.pos.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
@@ -52,9 +67,22 @@ export class Game {
         };
     }
 
+    simulate(dt) {
+        var needRender = false;
+        for (let ball of this.balls) {
+            if (ball.isMoving) {
+                ball.move(dt);
+                needRender = true;
+            }
+        }
+        return needRender;
+    }
+
     render() {
-        var table = dom('#table');
-        this.cue.render(table);
+        var board = dom('#board');
+        this.table.render(board);
+        this.balls.forEach(b => b.render(board));
+        this.cue.render(board);
         this.spinControl.render(dom('#spin-view'));
     }
     
@@ -63,13 +91,17 @@ export class Game {
             this.frame = requestAnimationFrame(timestamp => {
                 this.render();
                 this.frame = undefined;
+                if (this.simulate((timestamp - (this.timestamp || timestamp))/1000)) {
+                    this.queueRender();
+                }
+                this.timestamp = timestamp;
             })
         }
     }
 
 }
 
-Game.test = new Game('test', Cue.default);
+Game.test = new Game('test', Table.snooker, Cue.default, Ball.snookerAll);
 
 export var games = [
     Game.test

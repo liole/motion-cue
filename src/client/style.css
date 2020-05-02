@@ -68,7 +68,7 @@ button.main, input.main {
     z-index: -1;
 }
 
-#table {
+#board {
     width: 100%;
     height: auto;
     overflow: visible;
@@ -89,7 +89,7 @@ button.main, input.main {
     position: absolute;
     left: 50%;
     margin-left: -170px;
-    top: 100px;
+    top: 150px;
     padding: 20px;
     width: 340px;
 }
