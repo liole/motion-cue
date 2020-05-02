@@ -10,6 +10,10 @@ export class Table {
         this.initBalls = initBalls;
     }
 
+    get points() {
+        return this.cushions.points;
+    }
+
     resetBalls(balls) {
         for (let [i, ball] of balls.entries()) {
             // randomize in 1% of the radius

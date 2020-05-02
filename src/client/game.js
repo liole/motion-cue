@@ -1,8 +1,9 @@
 import { Cue } from './objects/cue.js';
 import { Table } from './objects/table.js';
-import { Ball } from './objects/ball.js';
+import { Ball, collide } from './objects/ball.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
+import { distPolygon, mirror } from './utils.js';
 
 export class Game {
 
@@ -71,7 +72,14 @@ export class Game {
         var needRender = false;
         for (let ball of this.balls) {
             if (ball.isMoving) {
-                ball.move(dt);
+                let data = ball.simulate(dt);
+                let distTable = distPolygon(this.table.points, data);
+                if (distTable[0] < ball.radius) {
+                    var fakeBall = mirror(distTable[1], distTable[2], ball);
+                    collide(ball, fakeBall);
+                    data = ball.simulate(dt);
+                }
+                ball.move(dt, data);
                 needRender = true;
             }
         }
