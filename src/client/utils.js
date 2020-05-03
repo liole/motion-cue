@@ -76,6 +76,13 @@ export function add(p1, p2) {
     };
 }
 
+export function mult(v, k) {
+    return {
+        x: v.x * k,
+        y: v.y * k
+    };
+}
+
 export function reverse(v) {
     return { x: -v.x, y: -v.y };
 } 

@@ -67,7 +67,7 @@ Table.snooker = new Table('#228b22', {
     thickness: 1.5
 }, i => {
     var middleD = { x: 78.9, y: 25 };
-    var dist = Math.random() * 8.06;
+    var dist = 0.8 + Math.random() * (8.06 - 0.8);
     var ang = Math.random() * Math.PI - Math.PI / 2;
     var cueBall = shift(middleD, ang, dist)
     return [

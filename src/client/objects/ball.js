@@ -74,7 +74,7 @@ Ball.snookerRedN = n => [
 Ball.snookerAll = Ball.snookerRedN(15);
 Ball.snookerShort = Ball.snookerRedN(10);
 
-export function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25, k = 2, kz = 0.05) {
+export function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25, k = 2, kz = 0.01) {
     return {
         x: x + velocity.x * dt,
         y: y + velocity.y * dt,

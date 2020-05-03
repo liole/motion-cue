@@ -3,7 +3,7 @@ import { Table } from './objects/table.js';
 import { Ball, collide } from './objects/ball.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
-import { distPolygon, mirror, dist } from './utils.js';
+import { distPolygon, mirror, dist, sqr, shift, mult } from './utils.js';
 
 export class Game {
 
@@ -33,7 +33,7 @@ export class Game {
                 dom('#spin-view-box').classList.add('focus');
             }
         }
-        if (event.init == null) {
+        if (event.init === null) {
             if (event.type == 'ball') {
                 dom('#spin-view-box').classList.remove('focus');
             }
@@ -48,6 +48,19 @@ export class Game {
                 let x = this.init.ball.pos.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
                 let y = this.init.ball.pos.y + Math.tan(event.beta - this.init.angle.beta) * 2;
                 this.spinControl.aim(x, y);
+                break;
+            case 'shot':
+                let energy = 10 * sqr(event.acceleration);
+                let totalSpin = this.spinControl.dist / (2/5) * Math.sqrt(energy * (5/7)) / this.cueBall.radius;
+                let planeSpin = mult(this.spinControl.toXY(), totalSpin == 0 ? 0 : totalSpin / this.spinControl.dist);
+                let totalSpeed = Math.sqrt(energy - (2/5) * sqr(totalSpin * this.cueBall.radius));
+                let ballAngle = this.cue.angle + Math.PI;
+                this.cueBall.velocity = shift({ x: 0, y: 0}, ballAngle, totalSpeed);
+                this.cueBall.spin = shift({ x: 0, y: 0}, ballAngle, planeSpin.y);
+                this.cueBall.spin.z = planeSpin.x;
+                this.timestamp = undefined;
+                console.log(energy, this.cueBall.velocity, this.cueBall.spin);
+                break;
         }
         this.queueRender();
     }

@@ -1,6 +1,10 @@
 var socket = io();
 
 var init = false;
+var timer = undefined;
+var maxAcceleration = 0;
+var criticalAcceleration = 8;
+var shotTimeout = 500;
 
 socket.on('connect', function() {
     socket.emit('cue', { id: getID() });
@@ -28,9 +32,16 @@ document.addEventListener('DOMContentLoaded', function() {
         sendBall({});
     });
 
+    window.addEventListener('devicemotion', function(e) {
+        if (e.acceleration.y > maxAcceleration) {
+            maxAcceleration = e.acceleration.y;
+        }
+        if (e.acceleration.y > criticalAcceleration && !timer) {
+            timer = this.setTimeout(sendShot, shotTimeout);
+        }
+    });
+
 });
-
-
 
 function sendCue(e) {
     socket.emit('control', getMessage(e, 'cue'));
@@ -40,6 +51,16 @@ function sendCue(e) {
 function sendBall(e) {
     socket.emit('control', getMessage(e, 'ball'));
     init = false;
+}
+
+function sendShot() {
+    socket.emit('control', {
+        id: getID(),
+        type: 'shot',
+        acceleration: maxAcceleration
+    });
+    maxAcceleration = 0;
+    timer = undefined;
 }
 
 function getMessage(event, type) {
