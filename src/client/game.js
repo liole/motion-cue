@@ -3,7 +3,7 @@ import { Table } from './objects/table.js';
 import { Ball, collide } from './objects/ball.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
-import { distPolygon, mirror } from './utils.js';
+import { distPolygon, mirror, dist } from './utils.js';
 
 export class Game {
 
@@ -41,12 +41,12 @@ export class Game {
         }
         switch (event.type) {
             case 'cue':
-                var angle = this.init.cue.angle + event.alpha - this.init.angle.alpha;
+                let angle = this.init.cue.angle + event.alpha - this.init.angle.alpha;
                 this.aimCue(angle);
                 break;
             case 'ball':
-                var x = this.init.ball.pos.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
-                var y = this.init.ball.pos.y + Math.tan(event.beta - this.init.angle.beta) * 2;
+                let x = this.init.ball.pos.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
+                let y = this.init.ball.pos.y + Math.tan(event.beta - this.init.angle.beta) * 2;
                 this.spinControl.aim(x, y);
         }
         this.queueRender();
@@ -69,25 +69,40 @@ export class Game {
     }
 
     simulate(dt) {
-        var needRender = false;
-        for (let ball of this.balls) {
-            if (ball.isMoving) {
-                let data = ball.simulate(dt);
-                let distTable = distPolygon(this.table.points, data);
+        let simBalls = this.balls.map(b => b.isMoving ? b.simulate(dt) : b);
+
+        for (let i = 0; i < this.balls.length; ++i) {
+            let ball = this.balls[i];
+            if (true /* bal.isMoving */ ) { // somehow can not split the triangle with this
+                let distTable = distPolygon(this.table.points, simBalls[i]);
                 if (distTable[0] < ball.radius) {
-                    var fakeBall = mirror(distTable[1], distTable[2], ball);
+                    let fakeBall = mirror(distTable[1], distTable[2], ball);
                     collide(ball, fakeBall);
-                    data = ball.simulate(dt);
+                    simBalls[i] = ball.simulate(dt);
                 }
-                ball.move(dt, data);
-                needRender = true;
+                for (let j = i+1; j < this.balls.length; ++j) {
+                    let otherBall = this.balls[j];
+                    let distBall = dist(simBalls[j], simBalls[i]);
+                    if (distBall < ball.radius + otherBall.radius) {
+                        collide(ball, otherBall);
+                        simBalls[i] = ball.simulate(dt);
+                        simBalls[j] = otherBall.simulate(dt);
+                    }
+                }
             }
         }
-        return needRender;
+
+        for (let i = 0; i < this.balls.length; ++i) {
+            if (this.balls[i].isMoving) {
+                this.balls[i].move(dt, simBalls[i]);
+            }
+        }
+
+        return this.balls.some(b => b.isMoving);
     }
 
     render() {
-        var board = dom('#board');
+        let board = dom('#board');
         this.table.render(board);
         this.balls.forEach(b => b.render(board));
         this.cue.render(board);

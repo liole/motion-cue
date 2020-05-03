@@ -18,11 +18,16 @@ export class Ball {
 
     get isMoving() {
         let eps = 1;
-        return Math.abs(this.velocity.x) > eps ||
+        let isMoving = Math.abs(this.velocity.x) > eps ||
             Math.abs(this.velocity.y) > eps ||
             Math.abs(this.spin.x) > eps ||
             Math.abs(this.spin.y) > eps ||
             Math.abs(this.spin.z) > eps;
+        if (!isMoving) {
+            this.velocity = { x: 0, y: 0 };
+            this.spin = { x: 0, y: 0, z: 0 };
+        }
+        return isMoving;
     }
 
     simulate(dt) {
