@@ -45,4 +45,4 @@ export class Cue {
 
 }
 
-Cue.default = new Cue(40, [0.5, 1], '#784d2b');
+Cue.snooker = new Cue(40, [0.5, 1], '#784d2b');

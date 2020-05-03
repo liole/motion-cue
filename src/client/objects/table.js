@@ -3,10 +3,11 @@ import { shift } from './../utils.js';
 
 export class Table {
 
-    constructor(color, cushions, frame, initBalls) {
+    constructor(color, cushions, frame, pockets, initBalls) {
         this.color = color;
         this.cushions = cushions;
         this.frame = frame;
+        this.pockets = pockets;
         this.initBalls = initBalls;
     }
 
@@ -25,7 +26,7 @@ export class Table {
     }
 
     render(root) {
-        if (!this.$frame) {
+        if (!this.$cushions || !this.$frame || !this.$cloth ||!this.$pockets) {
             this.$cushions = dom.svg('rect', {
                 style: `fill: ${this.cushions.color}`
             });
@@ -44,10 +45,19 @@ export class Table {
                 style: `fill: ${this.color}`
             });
             this.$cloth.set('points', this.cushions.points.map(p => `${p.x}, ${p.y}`).join(' '));
-            root.append(this.$cushions, this.$cloth, this.$frame);
+            this.$pockets = this.pockets.points.map(p => {
+                let $pocket = dom.svg('circle', {
+                    style: `fill: ${this.pockets.color}`
+                });
+                $pocket.set('cx', p.x);
+                $pocket.set('cy', p.y);
+                $pocket.set('r', this.pockets.radius);
+                return $pocket;
+            })
+            root.append(this.$cushions, this.$cloth, this.$frame, ...this.$pockets);
         }
 
-        return [this.$frame];
+        return [this.$cushions, this.$frame, this.$cloth, ...this.$pockets];
     }
 
 }
@@ -65,6 +75,10 @@ Table.snooker = new Table('#228b22', {
     x: 0.75, y: 0.75,
     width: 98.5, height: 48.5,
     thickness: 1.5
+}, {
+    color: '#000000',
+    points: [{ x: 2.21, y: 2.21 }, { x: 50, y: 1.5 }, { x: 97.79, y: 2.21 }, { x: 97.79, y: 47.79 }, { x: 50, y: 48.5 }, { x: 2.21, y: 47.79 }],
+    radius: 1
 }, i => {
     var middleD = { x: 78.9, y: 25 };
     var dist = 0.8 + Math.random() * (8.06 - 0.8);

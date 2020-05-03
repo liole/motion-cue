@@ -59,6 +59,7 @@ export class Game {
                 this.cueBall.spin = shift({ x: 0, y: 0}, ballAngle, planeSpin.y);
                 this.cueBall.spin.z = planeSpin.x;
                 this.timestamp = undefined;
+                this.spinControl.reset();
                 console.log(energy, this.cueBall.velocity, this.cueBall.spin);
                 break;
         }
@@ -86,7 +87,16 @@ export class Game {
 
         for (let i = 0; i < this.balls.length; ++i) {
             let ball = this.balls[i];
+            if (!ball.active) continue;
+
             if (true /* bal.isMoving */ ) { // somehow can not split the triangle with this
+                for (let pocket of this.table.pockets.points) {
+                    let distPocket = dist(pocket, simBalls[i]);
+                    if (distPocket < this.table.pockets.radius) {
+                        ball.pot();
+                        continue;
+                    }
+                }
                 let distTable = distPolygon(this.table.points, simBalls[i]);
                 if (distTable[0] < ball.radius) {
                     let fakeBall = mirror(distTable[1], distTable[2], ball);
@@ -95,6 +105,8 @@ export class Game {
                 }
                 for (let j = i+1; j < this.balls.length; ++j) {
                     let otherBall = this.balls[j];
+                    if (!otherBall.active) continue;
+
                     let distBall = dist(simBalls[j], simBalls[i]);
                     if (distBall < ball.radius + otherBall.radius) {
                         collide(ball, otherBall);
@@ -137,7 +149,7 @@ export class Game {
 
 }
 
-Game.test = new Game('test', Table.snooker, Cue.default, Ball.snookerAll);
+Game.test = new Game('snooker', Table.snooker, Cue.snooker, Ball.snookerAll);
 
 export var games = [
     Game.test

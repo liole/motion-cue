@@ -14,11 +14,13 @@ export class Ball {
         this.y = point.y;
         this.velocity = { x: 0, y: 0};
         this.spin = { x: 0, y: 0, z: 0 };
+        this.active = true;
     }
 
     get isMoving() {
         let eps = 1;
-        let isMoving = Math.abs(this.velocity.x) > eps ||
+        let isMoving = this.active ||
+            Math.abs(this.velocity.x) > eps ||
             Math.abs(this.velocity.y) > eps ||
             Math.abs(this.spin.x) > eps ||
             Math.abs(this.spin.y) > eps ||
@@ -41,6 +43,10 @@ export class Ball {
         this.spin = data.spin;
     }
 
+    pot() {
+        this.active = false;
+    }
+
     render(root) {
         if (!this.$ball) {
             this.$ball = dom.svg('circle', {
@@ -50,6 +56,7 @@ export class Ball {
             root.append(this.$ball);
         }
 
+        this.$ball.set('visibility', this.active ? 'visible' : 'hidden');
         this.$ball.set('cx', this.x);
         this.$ball.set('cy', this.y);
 
