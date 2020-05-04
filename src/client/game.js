@@ -149,8 +149,10 @@ export class Game {
 
 }
 
-Game.test = new Game('snooker', Table.snooker, Cue.snooker, Ball.snookerAll);
+Game.snooker = new Game('snooker', Table.snooker, Cue.snooker, Ball.snookerAll);
+Game.pool = new Game('pool', Table.pool, Cue.pool, Ball.poolAll);
 
 export var games = [
-    Game.test
+    Game.snooker,
+    Game.pool
 ];

@@ -65,22 +65,6 @@ export class Ball {
 
 }
 
-Ball.snooker = (color = '#fff') => new Ball(0.724, color);
-
-Ball.snookerRedN = n => [
-    Ball.snooker(),
-    Ball.snooker('#ffff00'),
-    Ball.snooker('#00cc00'),
-    Ball.snooker('#996633'),
-    Ball.snooker('#0000ff'),
-    Ball.snooker('#fb5f87'),
-    Ball.snooker('#000000'),
-    ...new Array(n).fill().map(() => Ball.snooker('#dd0000'))
-];
-
-Ball.snookerAll = Ball.snookerRedN(15);
-Ball.snookerShort = Ball.snookerRedN(10);
-
 export function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25, k = 2, kz = 0.01) {
     return {
         x: x + velocity.x * dt,
@@ -111,3 +95,28 @@ export function collide(b1, b2) {
 
     //TODO: z spin
 }
+
+Ball.snooker = (color = '#fff') => new Ball(0.724, color);
+
+Ball.snookerRedN = n => [
+    Ball.snooker(),
+    Ball.snooker('#ffff00'),
+    Ball.snooker('#00cc00'),
+    Ball.snooker('#996633'),
+    Ball.snooker('#0000ff'),
+    Ball.snooker('#fb5f87'),
+    Ball.snooker('#000000'),
+    ...new Array(n).fill().map(() => Ball.snooker('#dd0000'))
+];
+
+Ball.snookerAll = Ball.snookerRedN(15);
+Ball.snookerShort = Ball.snookerRedN(10);
+
+Ball.pool = (color = '#fff') => new Ball(1.1, color);
+
+Ball.poolAll = [
+    Ball.pool(),
+    Ball.pool('#000000'),
+    ...new Array(7).fill().map(() => Ball.pool('#dd0000')),
+    ...new Array(7).fill().map(() => Ball.pool('#0000ff'))
+];

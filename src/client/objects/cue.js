@@ -46,3 +46,4 @@ export class Cue {
 }
 
 Cue.snooker = new Cue(40, [0.5, 1], '#784d2b');
+Cue.pool = new Cue(40, [1, 2], '#cca88d');
