@@ -43,7 +43,8 @@ export class Table {
                 rect.set('height', this.frame.height);
             }
             this.$cloth = dom.svg('polygon', {
-                style: `fill: ${this.color}`
+                style: `fill: ${this.color}`,
+                id: 'table-surface'
             });
             this.$cloth.set('points', this.cushions.points.map(p => `${p.x}, ${p.y}`).join(' '));
             this.$pockets = this.pockets.points.map(p => {

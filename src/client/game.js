@@ -39,6 +39,7 @@ export class Game {
             }
             return;
         }
+        this.triggerTrace(this.trace);
         switch (event.type) {
             case 'cue':
                 let angle = this.init.cue.angle + event.alpha - this.init.angle.alpha;
@@ -51,9 +52,11 @@ export class Game {
                 break;
             case 'shot':
                 let energy = 10 * sqr(event.acceleration);
-                let totalSpin = this.spinControl.dist / (2/5) * Math.sqrt(energy * (5/7)) / this.cueBall.radius;
+                let k = Math.sqrt(5 * energy) / (3 * this.cueBall.radius);
+                let u = 25 / (2 * Math.sqrt(6));
+                let totalSpin = k * this.spinControl.dist * ( (5 - u) * this.spinControl.dist + u - 2 );
                 let planeSpin = mult(this.spinControl.toXY(), totalSpin == 0 ? 0 : totalSpin / this.spinControl.dist);
-                let totalSpeed = Math.sqrt(energy - (2/5) * sqr(totalSpin * this.cueBall.radius));
+                let totalSpeed = Math.sqrt(Math.abs(energy - (1/5) * sqr(totalSpin * this.cueBall.radius)));
                 let ballAngle = this.cue.angle + Math.PI;
                 this.cueBall.velocity = shift({ x: 0, y: 0}, ballAngle, totalSpeed);
                 this.cueBall.spin = shift({ x: 0, y: 0}, ballAngle, planeSpin.y);
@@ -62,6 +65,14 @@ export class Game {
                 this.spinControl.reset();
                 console.log(energy, this.cueBall.velocity, this.cueBall.spin);
                 break;
+        }
+        this.queueRender();
+    }
+
+    triggerTrace(trace) {
+        this.trace = trace || !this.trace;
+        for (let ball of this.balls) {
+            ball.setTrace(this.trace);
         }
         this.queueRender();
     }
@@ -105,7 +116,7 @@ export class Game {
                 }
                 for (let j = i+1; j < this.balls.length; ++j) {
                     let otherBall = this.balls[j];
-                    if (!otherBall.active) continue;
+                    if (!otherBall.active || (!ball.isMoving && !otherBall.isMoving)) continue;
 
                     let distBall = dist(simBalls[j], simBalls[i]);
                     if (distBall < ball.radius + otherBall.radius) {

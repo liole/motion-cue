@@ -15,16 +15,22 @@ export class Ball {
         this.velocity = { x: 0, y: 0};
         this.spin = { x: 0, y: 0, z: 0 };
         this.active = true;
+        this.trace = false;
+        this.tracePoints = [];
+    }
+    setTrace(trace) {
+        this.trace = trace;
+        this.tracePoints = [];
     }
 
     get isMoving() {
         let eps = 1;
-        let isMoving = this.active ||
+        let isMoving = this.active && (
             Math.abs(this.velocity.x) > eps ||
             Math.abs(this.velocity.y) > eps ||
             Math.abs(this.spin.x) > eps ||
             Math.abs(this.spin.y) > eps ||
-            Math.abs(this.spin.z) > eps;
+            Math.abs(this.spin.z) > eps);
         if (!isMoving) {
             this.velocity = { x: 0, y: 0 };
             this.spin = { x: 0, y: 0, z: 0 };
@@ -41,6 +47,9 @@ export class Ball {
         this.y = data.y;
         this.velocity = data.velocity;
         this.spin = data.spin;
+        if (this.trace) {
+            this.tracePoints.push({ x: this.x, y: this.y });
+        }
     }
 
     pot() {
@@ -48,35 +57,44 @@ export class Ball {
     }
 
     render(root) {
-        if (!this.$ball) {
+        if (!this.$ball || !this.$trace) {
             this.$ball = dom.svg('circle', {
                 style: `fill: ${this.color}`
             });
             this.$ball.set('r', this.radius);
             root.append(this.$ball);
+
+            this.$trace = dom.svg('polyline', {
+                style: `fill: none; stroke: ${this.color}; stroke-width: 0.1px; stroke-linejoin: round`
+            });
+            root.insertAfter(this.$trace, dom('#table-surface'));
         }
 
         this.$ball.set('visibility', this.active ? 'visible' : 'hidden');
         this.$ball.set('cx', this.x);
         this.$ball.set('cy', this.y);
 
+        this.$trace.set('visibility', this.trace ? 'visible' : 'hidden');
+        this.$trace.set('points', this.tracePoints.map(p => `${p.x}, ${p.y}`).join(' '));
+
         return [this.$ball];
     }
 
 }
 
-export function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25, k = 2, kz = 0.01) {
+export function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25, k = 2, kz = 0.1) {
+    let totalSpeed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) || 1;
     return {
         x: x + velocity.x * dt,
         y: y + velocity.y * dt,
         velocity: {
-            x: velocity.x - Math.sign(velocity.x - spin.x * radius) * dt * k + velocity.y * spin.z * radius * dt * kz - (velocity.x - spin.x * radius) * dt * fv,
-            y: velocity.y - Math.sign(velocity.y - spin.y * radius) * dt * k - velocity.x * spin.z * radius * dt * kz - (velocity.y - spin.y * radius) * dt * fv
+            x: velocity.x - Math.sign(velocity.x - spin.x * radius) * dt * k + velocity.y / totalSpeed * spin.z * radius * dt * kz - (velocity.x - spin.x * radius) * dt * fv,
+            y: velocity.y - Math.sign(velocity.y - spin.y * radius) * dt * k - velocity.x / totalSpeed * spin.z * radius * dt * kz - (velocity.y - spin.y * radius) * dt * fv
         },
         spin: {
             x: spin.x - Math.sign(spin.x - velocity.x / radius) * dt * k - spin.x * dt * fs,
             y: spin.y - Math.sign(spin.y - velocity.y / radius) * dt * k - spin.y * dt * fs,
-            z: spin.z - Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) * spin.z / radius * dt * kz - spin.z * dt * fs
+            z: spin.z - spin.z * dt * kz - spin.z * dt * fs
         }
     };
 }

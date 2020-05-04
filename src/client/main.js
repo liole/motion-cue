@@ -31,6 +31,12 @@ socket.on('control', event => {
     game.handle(event);
 });
 
+window.addEventListener('keyup', e => {
+    if (e.key == 't' && game) {
+        game.triggerTrace();
+    }
+})
+
 function createGame(type) {
     socket.emit('create', { type }, ({ id }) => {
         startGame(type, id);

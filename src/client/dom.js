@@ -21,6 +21,9 @@ var extensions = {
     },
     css(style) {
         Object.assign(this.style, style);
+    },
+    insertAfter(node, reference) {
+        this.insertBefore(node, reference.nextSibling);
     }
 };
 
