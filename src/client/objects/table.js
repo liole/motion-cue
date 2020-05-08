@@ -83,7 +83,7 @@ Table.snooker = new Table('#228b22', {
     radius: 1
 }, () => {
     var middleD = { x: 78.9, y: 25 };
-    var dist = 0.8 + Math.random() * (8.06 - 0.8);
+    var dist = 2 + Math.random() * (8.06 - 2);
     var ang = Math.random() * Math.PI - Math.PI / 2;
     var cueBall = shift(middleD, ang, dist)
     return [
@@ -119,8 +119,8 @@ Table.pool = new Table('#166923', {
     radius: 2.2
 }, () => {
     var cueBall = {
-        x: 75 + 20 * Math.random(),
-        y: 5 + 40 * Math.random()
+        x: 75 + 15 * Math.random(),
+        y: 7 + 36 * Math.random()
     };
     return [
         cueBall,

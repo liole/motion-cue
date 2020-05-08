@@ -16,6 +16,7 @@ export class Ball {
         this.spin = { x: 0, y: 0, z: 0 };
         this.active = true;
         this.trace = false;
+        this.inHand = false;
         this.tracePoints = [];
     }
     setTrace(trace) {
@@ -59,7 +60,7 @@ export class Ball {
     render(root) {
         if (!this.$ball || !this.$trace) {
             this.$ball = dom.svg('circle', {
-                style: `fill: ${this.color}`
+                style: `fill: ${this.color}; stroke: #f00; stroke-width: ${this.radius / 2}`
             });
             this.$ball.set('r', this.radius);
             root.append(this.$ball);
@@ -71,6 +72,7 @@ export class Ball {
         }
 
         this.$ball.set('visibility', this.active ? 'visible' : 'hidden');
+        this.$ball.set('stroke-opacity', this.inHand ? 0.5 : 0);
         this.$ball.set('cx', this.x);
         this.$ball.set('cy', this.y);
 

@@ -17,6 +17,7 @@ export class Game {
 
         this.table.resetBalls(this.balls);
         this.aimCue(Math.PI / 4);
+        this.cueBall.inHand = true;
     }
 
     get cueBall() {
@@ -30,12 +31,12 @@ export class Game {
     handle(event) {
         if (event.init) {
             this.initControl(event);
-            if (event.type == 'ball') {
+            if (event.type == 'ball' && !this.cueBall.inHand) {
                 dom('#spin-view-box').classList.add('focus');
             }
         }
         if (event.init === null) {
-            if (event.type == 'ball') {
+            if (event.type == 'ball' && !this.cueBall.inHand) {
                 dom('#spin-view-box').classList.remove('focus');
             }
             return;
@@ -43,13 +44,19 @@ export class Game {
         this.triggerTrace(this.trace);
         switch (event.type) {
             case 'cue':
+                this.cueBall.inHand = false;
                 let angle = this.init.cue.angle + event.alpha - this.init.angle.alpha;
                 this.aimCue(angle);
                 break;
             case 'ball':
-                let x = this.init.ball.pos.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
-                let y = this.init.ball.pos.y + Math.tan(event.beta - this.init.angle.beta) * 2;
-                this.spinControl.aim(x, y);
+                let x = this.init.spinBall.pos.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
+                let y = this.init.spinBall.pos.y + Math.tan(event.beta - this.init.angle.beta) * 2;
+                if (this.cueBall.inHand) {
+                    this.cueBall.x = this.init.cueBall.pos.x + x * 25;
+                    this.cueBall.y = this.init.cueBall.pos.y - y * 25;
+                } else {
+                    this.spinControl.aim(x, y);
+                }
                 break;
             case 'shot':
                 let energy = 10 * sqr(event.acceleration);
@@ -88,8 +95,14 @@ export class Game {
             cue: {
                 angle: this.cue.angle
             },
-            ball: {
+            spinBall: {
                 pos: this.spinControl.toXY()
+            },
+            cueBall: {
+                pos: {
+                    x: this.cueBall.x,
+                    y: this.cueBall.y
+                }
             }
         };
     }
