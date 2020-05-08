@@ -13,6 +13,7 @@ export class Game {
         this.cue = cue;
         this.balls = balls;
         this.spinControl = SpinControl.default;
+        this.trace = false;
 
         this.table.resetBalls(this.balls);
         this.aimCue(Math.PI / 4);
@@ -69,8 +70,8 @@ export class Game {
         this.queueRender();
     }
 
-    triggerTrace(trace) {
-        this.trace = trace || !this.trace;
+    triggerTrace(trace = !this.trace) {
+        this.trace = trace;
         for (let ball of this.balls) {
             ball.setTrace(this.trace);
         }

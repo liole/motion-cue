@@ -1,5 +1,5 @@
 import dom from './../dom.js';
-import { vector, project, orthogonal, add, reverse } from '../utils.js';
+import { vector, project, orthogonal, add, reverse, mult } from '../utils.js';
 
 export class Ball {
 
@@ -99,7 +99,7 @@ export function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25
     };
 }
 
-export function collide(b1, b2) {
+export function collide(b1, b2, tk = 0.2) {
     let n = vector(b1, b2);
     let v1n = project(n, b1.velocity);
     let v2n = b2.velocity ? project(n, b2.velocity) : reverse(v1n);
@@ -111,7 +111,20 @@ export function collide(b1, b2) {
     b1.velocity = add(v1o, v2n);
     b2.velocity = add(v2o, v1n);
 
-    //TODO: z spin
+    if (b1.spin) {
+        let s1v = b1.spin.z * b1.radius;
+        b2.velocity = add(b2.velocity, mult(ort, s1v * tk));
+
+        if (!b2.spin) {
+            b1.velocity = add(b1.velocity, mult(ort, -s1v));
+        }
+    }
+    if (b2.spin) {
+        let s2v = b2.spin.z * b2.radius;
+        b1.velocity = add(b1.velocity, mult(ort, s2v * tk));
+    }
+
+    //TODO: transfer spin
 }
 
 Ball.snooker = (color = '#fff') => new Ball(0.724, color);
