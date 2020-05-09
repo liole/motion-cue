@@ -3,6 +3,7 @@ import { Game, games } from './game.js';
 
 var socket = io();
 var game = undefined;
+var userID = localStorage.userID || (localStorage.userID = Math.random().toString(36).substr(2));
 
 dom('#init-create').on('click', e => {
     var container = dom('#type');
@@ -55,7 +56,7 @@ function startGame(type, id) {
 
 async function showConnectBox() {
     var elem = await QRCode.toCanvas(dom('#cue-qr'),
-        `${location.origin}/cue/#${socket.id}`,
+        `${location.origin}/cue/#${userID}`,
         { scale: 15, margin: 3 });
 
     elem.css({
@@ -68,4 +69,5 @@ async function showConnectBox() {
 
 socket.on('connect', () => {
     console.log(socket.id);
+    socket.emit('user', { id: userID });
 });

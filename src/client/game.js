@@ -49,11 +49,11 @@ export class Game {
                 this.aimCue(angle);
                 break;
             case 'ball':
-                let x = this.init.spinBall.pos.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
-                let y = this.init.spinBall.pos.y + Math.tan(event.beta - this.init.angle.beta) * 2;
+                let x = this.init.ball.spin.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
+                let y = this.init.ball.spin.y + Math.tan(event.beta - this.init.angle.beta) * 2;
                 if (this.cueBall.inHand) {
-                    this.cueBall.x = this.init.cueBall.pos.x + x * 25;
-                    this.cueBall.y = this.init.cueBall.pos.y - y * 25;
+                    this.cueBall.x = this.init.ball.pos.x + x * 25;
+                    this.cueBall.y = this.init.ball.pos.y - y * 25;
                 } else {
                     this.spinControl.aim(x, y);
                 }
@@ -95,10 +95,8 @@ export class Game {
             cue: {
                 angle: this.cue.angle
             },
-            spinBall: {
-                pos: this.spinControl.toXY()
-            },
-            cueBall: {
+            ball: {
+                spin: this.spinControl.toXY(),
                 pos: {
                     x: this.cueBall.x,
                     y: this.cueBall.y

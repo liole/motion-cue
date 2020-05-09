@@ -6,9 +6,8 @@ var maxAcceleration = 0;
 var criticalAcceleration = 8;
 var shotTimeout = 500;
 
-socket.on('connect', function() {
-    socket.emit('cue', { id: getID() });
-});
+socket.on('connect', sendInit);
+socket.on('cue-request', sendInit);
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -42,6 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 });
+
+function sendInit() {
+    socket.emit('cue', { id: getID() });
+}
 
 function sendCue(e) {
     socket.emit('control', getMessage(e, 'cue'));
