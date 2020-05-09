@@ -3,7 +3,7 @@ import { Table } from './objects/table.js';
 import { Ball, collide } from './objects/ball.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
-import { distPolygon, mirror, dist, sqr, shift, mult } from './utils.js';
+import { distPolygon, mirror, dist, sqr, shift, mult, isInside } from './utils.js';
 
 const syncInverval = 1000;
 
@@ -114,7 +114,7 @@ export class Game {
 
         for (let i = 0; i < this.balls.length; ++i) {
             let ball = this.balls[i];
-            if (!ball.active) continue;
+            if (!ball.active || ball.inHand) continue;
 
             if (true /* bal.isMoving */ ) { // somehow can not split the triangle with this
                 for (let pocket of this.table.pockets.points) {
@@ -145,12 +145,23 @@ export class Game {
         }
 
         for (let i = 0; i < this.balls.length; ++i) {
-            if (this.balls[i].isMoving) {
-                this.balls[i].move(dt, simBalls[i]);
+            let ball = this.balls[i];
+            if (ball.isMoving) {
+                ball.move(dt, simBalls[i]);
+            }
+            if ((ball == this.cueBall && !ball.active) || (!isInside(this.table.points, ball) && ball.active)) {
+                Object.assign(ball, this.table.initBalls()[i], {
+                    velocity: { x: 0, y: 0 },
+                    spin: { x: 0, y: 0, z: 0 }
+                });
+                if (ball = this.cueBall) {
+                    ball.active = true;
+                    ball.inHand = true;
+                }
             }
         }
 
-        return this.balls.some(b => b.isMoving);
+        return this.balls.some(b => b.isMoving || b.inHand);
     }
 
     getSyncState() {
