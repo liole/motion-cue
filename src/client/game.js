@@ -5,6 +5,8 @@ import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
 import { distPolygon, mirror, dist, sqr, shift, mult } from './utils.js';
 
+const syncInverval = 1000;
+
 export class Game {
 
     constructor(type, table, cue, balls) {
@@ -14,6 +16,7 @@ export class Game {
         this.balls = balls;
         this.spinControl = SpinControl.default;
         this.trace = false;
+        this.owner = false;
 
         this.table.resetBalls(this.balls);
         this.aimCue(Math.PI / 4);
@@ -59,6 +62,7 @@ export class Game {
                 }
                 break;
             case 'shot':
+                this.owner = event.id == this.userID;
                 let energy = 10 * sqr(event.acceleration);
                 let k = Math.sqrt(5 * energy) / (3 * this.cueBall.radius);
                 let u = 25 / (2 * Math.sqrt(6));
@@ -149,6 +153,39 @@ export class Game {
         return this.balls.some(b => b.isMoving);
     }
 
+    getSyncState() {
+        return {
+            id: this.id,
+            balls: this.balls.map(ball => ({
+                x: ball.x,
+                y: ball.y,
+                velocity: ball.velocity,
+                spin: ball.spin,
+                active: ball.active,
+                inHand: ball.inHand
+            })),
+            cue: {
+                x: this.cue.x,
+                y: this.cue.y,
+                angle: this.cue.angle,
+                tilt: this.cue.tilt
+            },
+            spinControl: {
+                angle: this.spinControl.angle,
+                dist: this.spinControl.dist
+            }
+        };
+    }
+
+    setSyncState(state) {
+        for (let i = 0; i < state.balls.length; ++i) {
+            Object.assign(this.balls[i], state.balls[i]);
+        }
+        Object.assign(this.cue, state.cue);
+        Object.assign(this.spinControl, state.spinControl);
+        this.queueRender();
+    }
+
     render() {
         let board = dom('#board');
         this.table.render(board);
@@ -164,6 +201,12 @@ export class Game {
                 this.frame = undefined;
                 if (this.simulate((timestamp - (this.timestamp || timestamp))/1000)) {
                     this.queueRender();
+                    if (this.owner && (timestamp - (this.syncTimestamp || 0) > syncInverval)) {
+                        this.pushSync();
+                        this.syncTimestamp = timestamp;
+                    }
+                } else if (this.owner) {
+                    this.pushSync();
                 }
                 this.timestamp = timestamp;
             })

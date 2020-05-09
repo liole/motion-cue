@@ -26,10 +26,24 @@ dom('#init-join').on('click', e => {
     dom('#join-id').focus();
 });
 
+dom('#join-id').on('keyup', e => {
+    if (dom('#join-id').value.length == 4) {
+        joinGame(dom('#join-id').value);
+    }
+});
+
 socket.on('cue', () => dom('#connect-box').hide());
 
 socket.on('control', event => {
     game.handle(event);
+});
+
+socket.on('request-sync', () => {
+    game.pushSync();
+});
+
+socket.on('sync', state => {
+    game.setSyncState(state);
 });
 
 window.addEventListener('keyup', e => {
@@ -44,11 +58,23 @@ function createGame(type) {
     });
 }
 
+function joinGame(id) {
+    socket.emit('join', { id }, ({ type }) => {
+        if (type) {
+            startGame(type, id);
+            socket.emit('request-sync', { id });
+        }
+    });
+}
+
 function startGame(type, id) {
     document.body.requestFullscreen();
     game = Game[type];
     game.id = id;
+    game.userID = userID;
+    game.pushSync = () => socket.emit('sync', game.getSyncState());
     game.render();
+    dom('#game-id').innerText = id;
     dom('body').className = 'game';
     showConnectBox();
     window.game = game;

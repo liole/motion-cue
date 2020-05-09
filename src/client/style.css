@@ -115,3 +115,15 @@ button.main, input.main {
     width: 100%;
     height: 100%;
 }
+
+#game-id {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    line-height: calc(100vh - 50vw);
+    padding: 0px 30px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 3px 3px 5px #444;
+}

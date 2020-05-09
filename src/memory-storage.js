@@ -7,6 +7,9 @@ var service = {
     getGame(id) {
         return data.games[id];
     },
+    findGame(predicate) {
+        return Object.keys(data.games).find(id => predicate(data.games[id]));
+    },
     createGame(id, game) {
         data.games[id] = game;
     },
@@ -15,6 +18,12 @@ var service = {
     },
     deleteGame(id) {
         data.games[id] = undefined;
+    },
+    deletePlayerFromGames(id) {
+        for(var gameID in data.games) {
+            var game = data.games[gameID];
+            game.players = game.players.filter(p => p != id)
+        }
     },
 
     getUser(id) {
