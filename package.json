@@ -1,8 +1,10 @@
 {
-    "name": "billiard-live",
+    "name": "motion-cue",
     "version": "0.0.1",
-    "description": "Billiard simulation with gesture control",
-    "scripts": {},
+    "description": "Billiard simulation with motion control",
+    "scripts": {
+        "start": "node ./src/app.js"
+    },
     "dependencies": {
         "express": "^4.17.1",
         "socket.io": "^2.3.0"

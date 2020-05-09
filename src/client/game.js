@@ -207,6 +207,7 @@ export class Game {
                     }
                 } else if (this.owner) {
                     this.pushSync();
+                    this.owner = false;
                 }
                 this.timestamp = timestamp;
             })

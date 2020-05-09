@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
     socket.on('control', data => {
         var game = storage.findGame(game => game.players.includes(data.id));
         if (game) {
-            io.to(game).emit('control', data);
+            io.to(game).volatile.emit('control', data);
         }
 
     });
@@ -84,6 +84,8 @@ io.on('connection', (socket) => {
     });
 });
 
-http.listen(process.env.PORT, () => {
-    console.log('listening on *:'+process.env.PORT);
+var port = process.env.PORT || 147;
+
+http.listen(port, () => {
+    console.log('listening on *:' + port);
 });
