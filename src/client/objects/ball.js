@@ -33,10 +33,14 @@ export class Ball {
             Math.abs(this.spin.y) > eps ||
             Math.abs(this.spin.z) > eps);
         if (!isMoving) {
-            this.velocity = { x: 0, y: 0 };
-            this.spin = { x: 0, y: 0, z: 0 };
+            this.stop();
         }
         return isMoving;
+    }
+
+    stop() {
+        this.velocity = { x: 0, y: 0 };
+        this.spin = { x: 0, y: 0, z: 0 };
     }
 
     simulate(dt) {

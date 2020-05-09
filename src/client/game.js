@@ -4,16 +4,18 @@ import { Ball, collide } from './objects/ball.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
 import { distPolygon, mirror, dist, sqr, shift, mult, isInside } from './utils.js';
+import { DefaultController } from './controllers/default.js';
 
 const syncInverval = 1000;
 
 export class Game {
 
-    constructor(type, table, cue, balls) {
+    constructor(type, table, cue, balls, controller) {
         this.type = type;
         this.table = table;
         this.cue = cue;
         this.balls = balls;
+        this.controller = controller.attach(this);
         this.spinControl = SpinControl.default;
         this.trace = false;
         this.owner = false;
@@ -121,6 +123,7 @@ export class Game {
                     let distPocket = dist(pocket, simBalls[i]);
                     if (distPocket < this.table.pockets.radius) {
                         ball.pot();
+                        this.controller.handle('pot', { ball });
                         continue;
                     }
                 }
@@ -128,6 +131,7 @@ export class Game {
                 if (distTable[0] < ball.radius) {
                     let fakeBall = mirror(distTable[1], distTable[2], ball);
                     collide(ball, fakeBall);
+                    this.controller.handle('cushion', { ball });
                     simBalls[i] = ball.simulate(dt);
                 }
                 for (let j = i+1; j < this.balls.length; ++j) {
@@ -137,6 +141,7 @@ export class Game {
                     let distBall = dist(simBalls[j], simBalls[i]);
                     if (distBall < ball.radius + otherBall.radius) {
                         collide(ball, otherBall);
+                        this.controller.handle('collision', { balls: [ball, otherBall] });
                         simBalls[i] = ball.simulate(dt);
                         simBalls[j] = otherBall.simulate(dt);
                     }
@@ -149,19 +154,13 @@ export class Game {
             if (ball.isMoving) {
                 ball.move(dt, simBalls[i]);
             }
-            if ((ball == this.cueBall && !ball.active) || (!isInside(this.table.points, ball) && ball.active)) {
-                Object.assign(ball, this.table.initBalls()[i], {
-                    velocity: { x: 0, y: 0 },
-                    spin: { x: 0, y: 0, z: 0 }
-                });
-                if (ball = this.cueBall) {
-                    ball.active = true;
-                    ball.inHand = true;
-                }
+            if (!isInside(this.table.points, ball) && ball.isMoving) {
+                this.controller.handle('out', { ball });
+                ball.stop();
             }
         }
 
-        return this.balls.some(b => b.isMoving || b.inHand);
+        return this.balls.some(b => b.isMoving);
     }
 
     getSyncState() {
@@ -217,8 +216,10 @@ export class Game {
                         this.syncTimestamp = timestamp;
                     }
                 } else if (this.owner) {
+                    this.controller.handle('stop');
                     this.pushSync();
                     this.owner = false;
+                    this.queueRender();
                 }
                 this.timestamp = timestamp;
             })
@@ -227,8 +228,8 @@ export class Game {
 
 }
 
-Game.snooker = new Game('snooker', Table.snooker, Cue.snooker, Ball.snookerAll);
-Game.pool = new Game('pool', Table.pool, Cue.pool, Ball.poolAll);
+Game.snooker = new Game('snooker', Table.snooker, Cue.snooker, Ball.snookerAll, new DefaultController());
+Game.pool = new Game('pool', Table.pool, Cue.pool, Ball.poolAll, new DefaultController());
 
 export var games = [
     Game.snooker,

@@ -117,5 +117,3 @@ export function isInside(points, p) {
     }
     return inside;
 }
-
-window.isInside = isInside;
