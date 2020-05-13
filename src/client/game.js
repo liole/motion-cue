@@ -1,6 +1,7 @@
 import { Cue } from './objects/cue.js';
 import { Table } from './objects/table.js';
-import { Ball, collide } from './objects/ball.js';
+import { Ball } from './objects/ball.js';
+import { collide } from './physics.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
 import { distPolygon, mirror, dist, sqr, shift, mult, isInside } from './utils.js';
@@ -57,8 +58,8 @@ export class Game {
                 let x = this.init.ball.spin.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
                 let y = this.init.ball.spin.y + Math.tan(event.beta - this.init.angle.beta) * 2;
                 if (this.cueBall.inHand) {
-                    this.cueBall.x = this.init.ball.pos.x + x * 25;
-                    this.cueBall.y = this.init.ball.pos.y - y * 25;
+                    this.cueBall.x = this.init.ball.pos.x + x * 15;
+                    this.cueBall.y = this.init.ball.pos.y - y * 15;
                 } else {
                     this.spinControl.aim(x, y);
                 }
