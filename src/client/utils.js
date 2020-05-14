@@ -9,6 +9,10 @@ export function sqr(x) {
     return x * x;
 }
 
+export function len(v) {
+    return Math.sqrt(v.x*v.x + v.y*v.y);
+}
+
 export function dist(p1, p2) {
     return Math.sqrt(sqr(p1.x - p2.x) + sqr(p1.y - p2.y));
 }

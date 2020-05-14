@@ -1,4 +1,4 @@
-import { vector, project, orthogonal, add, reverse, mult, sqr, sub } from './utils.js';
+import { vector, project, orthogonal, add, reverse, mult, sqr, sub, dist, mirror, distPolygon, len } from './utils.js';
 
 export function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25, k = 2, kz = 0.1) {
     let totalSpeed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) || 1;
@@ -68,4 +68,53 @@ function collide_internal(b1, b2, tk = 0.2) {
     }
 
     //TODO: transfer spin
+}
+
+// fix any overlapping objects
+export function applyShapes(balls, table, maxRounds = 10) {
+    let fixed = [];
+
+    for(let round = 0; round < maxRounds; ++round) {
+
+        for (let ball of balls.filter(b => !fixed.includes(b))) {
+            let distTable = distPolygon(table, ball);
+            let overlap = ball.radius - distTable[0];
+            if (overlap > 0) {
+                let v = vector(mirror(distTable[1], distTable[2], ball), ball);
+                Object.assign(ball, add(ball, mult(v, overlap)));
+                fixed.push(ball);
+            }
+        }
+
+        let shift = balls.map(b => ({ x: 0, y: 0}));
+
+        for (let i = 0; i < balls.length; ++i) {
+            for (let j = i+1; j < balls.length; ++j) {
+                let distBalls = dist(balls[i], balls[j]);
+                let overlap = balls[i].radius + balls[j].radius - distBalls;
+                if (overlap > 0) {
+                    let v = vector(balls[i], balls[j]);
+                    let k = 0.5;
+                    if (fixed.includes(balls[i]) || fixed.includes(balls[j])) {
+                        k = 1;
+                    }
+                    if (!fixed.includes(balls[i])) {
+                        shift[i] = add(shift[i], mult(v, -overlap * k));
+                    }
+                    if (!fixed.includes(balls[j])) {
+                        shift[j] = add(shift[j], mult(v, overlap * k));
+                    }
+                }
+            }
+        }
+
+        if (shift.every(d => len(d) < 1e-2)) {
+            break;
+        }
+
+        for (let i = 0; i < balls.length; ++i) {
+            Object.assign(balls[i], add(balls[i], shift[i]));
+        }
+
+    }
 }

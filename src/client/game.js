@@ -1,7 +1,7 @@
 import { Cue } from './objects/cue.js';
 import { Table } from './objects/table.js';
 import { Ball } from './objects/ball.js';
-import { collide } from './physics.js';
+import { collide, applyShapes } from './physics.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
 import { distPolygon, mirror, dist, sqr, shift, mult, isInside } from './utils.js';
@@ -160,6 +160,8 @@ export class Game {
                 ball.stop();
             }
         }
+
+        applyShapes(this.balls, this.table.points);
 
         return this.balls.some(b => b.isMoving);
     }
