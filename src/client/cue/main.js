@@ -14,21 +14,25 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cue').addEventListener('touchstart', function(e) {
         init = true;
         window.addEventListener('deviceorientation', sendCue);
+        e.target.className = 'active';
     });
     document.getElementById('cue').addEventListener('touchend', function(e) {
         window.removeEventListener('deviceorientation', sendCue);
         init = null;
         sendCue({});
+        e.target.className = '';
     });
         
     document.getElementById('ball').addEventListener('touchstart', function(e) {
         init = true;
         window.addEventListener('deviceorientation', sendBall);
+        e.target.className = 'active';
     });
     document.getElementById('ball').addEventListener('touchend', function(e) {
         window.removeEventListener('deviceorientation', sendBall);
         init = null;
         sendBall({});
+        e.target.className = '';
     });
 
     window.addEventListener('devicemotion', function(e) {
