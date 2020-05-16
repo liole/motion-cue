@@ -6,6 +6,8 @@ var maxAcceleration = 0;
 var criticalAcceleration = 8;
 var shotTimeout = 500;
 
+var haveMotion = false;
+
 socket.on('connect', sendInit);
 socket.on('cue-request', sendInit);
 
@@ -35,16 +37,42 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.className = '';
     });
 
-    window.addEventListener('devicemotion', function(e) {
-        if (e.acceleration.y > maxAcceleration) {
-            maxAcceleration = e.acceleration.y;
-        }
-        if (e.acceleration.y > criticalAcceleration && !timer) {
-            timer = this.setTimeout(sendShot, shotTimeout);
-        }
-    });
+    window.addEventListener('devicemotion', trackMotion);
 
+    setTimeout(checkMotion, shotTimeout);
 });
+
+function checkMotion() {
+    if (!haveMotion) {
+        var banner = document.getElementById("permissions");
+        banner.className = "show";
+        banner.onclick = function() {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission().then(function(stateOrientation) {
+                    if (stateOrientation == "granted") {
+                        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                            DeviceMotionEvent.requestPermission().then(function(stateMotion) {
+                                if (stateMotion == "granted") {
+                                    banner.className = "";
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    }
+}
+
+function trackMotion(e) {
+    haveMotion = true;
+    if (e.acceleration.y > maxAcceleration) {
+        maxAcceleration = e.acceleration.y;
+    }
+    if (e.acceleration.y > criticalAcceleration && !timer) {
+        timer = this.setTimeout(sendShot, shotTimeout);
+    }
+}
 
 function sendInit() {
     socket.emit('cue', { id: getID() });
