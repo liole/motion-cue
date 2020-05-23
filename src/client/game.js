@@ -8,6 +8,7 @@ import { distPolygon, mirror, dist, sqr, shift, mult, isInside } from './utils.j
 import { DefaultController } from './controllers/default.js';
 
 const syncInverval = 1000;
+const timeStep = 15; // up to 66.66 fps
 
 export class Game {
 
@@ -112,7 +113,22 @@ export class Game {
         };
     }
 
-    simulate(dt) {
+    simulate(timestamp) {
+        if (!this.timestamp) {
+            this.timestamp = timestamp - timeStep - 1e-6;
+        }
+        while (timestamp - this.timestamp > timeStep) {
+            var moving = this.simulateStep();
+            if (!moving) {
+                this.timestamp = undefined;
+                break;
+            }
+            this.timestamp += timeStep;
+        }
+        return moving;
+    }
+
+    simulateStep(dt = timeStep / 1000) {
         let simBalls = this.balls.map(b => b.isMoving ? b.simulate(dt) : b);
 
         for (let i = 0; i < this.balls.length; ++i) {
@@ -212,7 +228,7 @@ export class Game {
             this.frame = requestAnimationFrame(timestamp => {
                 this.render();
                 this.frame = undefined;
-                if (this.simulate((timestamp - (this.timestamp || timestamp))/1000)) {
+                if (this.simulate(timestamp)) {
                     this.queueRender();
                     if (this.owner && (timestamp - (this.syncTimestamp || 0) > syncInverval)) {
                         this.pushSync();
@@ -224,7 +240,6 @@ export class Game {
                     this.owner = false;
                     this.queueRender();
                 }
-                this.timestamp = timestamp;
             })
         }
     }
