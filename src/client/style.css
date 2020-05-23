@@ -128,6 +128,35 @@ button.main, input.main {
     text-shadow: 3px 3px 5px #444;
 }
 
+#score {
+    display: inline-block;
+    vertical-align: top;
+    line-height: calc(100vh - 50vw);
+    padding: 0px 30px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 3px 3px 5px #444;
+}
+
+#score div {
+    display: inline-block;
+    padding: 0px 40px;
+}
+
+.score.active {
+    background-color: #ccffcc66;
+}
+
+.score.active.remote {
+    animation: pulse 2s infinite
+}
+
+.score.local {
+    height: calc(100vh - 50vw - 5px);
+    border-bottom: solid 5px #ff0;
+}
+
 #alert {
     opacity: 0;
     position: absolute;
@@ -142,4 +171,16 @@ button.main, input.main {
 
 #alert.show {
     opacity: 1;
+}
+
+@keyframes pulse {
+    0% {
+        background-color: #ccffcc66;
+    }
+    25% {
+        background-color: #ccffcc00;
+    }
+    100% {
+        background-color: #ccffcc66;
+    }
 }

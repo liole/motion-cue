@@ -43,6 +43,7 @@ io.on('connection', (socket) => {
                 storage.deletePlayerFromGames(userID);
                 storage.updateGame(data.id, game => game.players.push(userID));
                 socket.join(data.id);
+                socket.to(data.id).emit('new-player', { id: userID });
                 console.log(`User ${userID} joind game ${data.id}.`);
                 callback(game);
                 socket.broadcast.emit('cue-request', { id: userID });

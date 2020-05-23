@@ -46,6 +46,15 @@ socket.on('sync', state => {
     game.setSyncState(state);
 });
 
+socket.on('new-player', player => {
+    game.controller.addPlayer({
+        type: 'remote',
+        id: player.id,
+        score: 0,
+        active: false
+    });
+})
+
 window.addEventListener('keyup', e => {
     if (e.key == 't' && game) {
         game.triggerTrace();
@@ -72,6 +81,7 @@ function startGame(type, id) {
     game = Game[type];
     game.id = id;
     game.userID = userID;
+    game.controller.addPlayer();
     game.pushSync = () => socket.emit('sync', game.getSyncState());
     game.render();
     dom('#game-id').innerText = id;

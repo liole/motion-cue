@@ -36,6 +36,10 @@ export class Game {
     }
 
     handle(event) {
+        if (!this.controller.isActive(event.id)) {
+            return;
+        }
+        
         if (event.init) {
             this.initControl(event);
             if (event.type == 'ball' && !this.cueBall.inHand) {
@@ -202,7 +206,8 @@ export class Game {
             spinControl: {
                 angle: this.spinControl.angle,
                 dist: this.spinControl.dist
-            }
+            },
+            players: this.controller.players
         };
     }
 
@@ -212,6 +217,7 @@ export class Game {
         }
         Object.assign(this.cue, state.cue);
         Object.assign(this.spinControl, state.spinControl);
+        this.controller.setPlayers(state.players);
         this.queueRender();
     }
 
