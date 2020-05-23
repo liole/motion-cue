@@ -127,3 +127,19 @@ button.main, input.main {
     color: #fff;
     text-shadow: 3px 3px 5px #444;
 }
+
+#alert {
+    opacity: 0;
+    position: absolute;
+    top: 12.5vw;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    padding: 25px;
+    transition: opacity .5s;
+    font-weight: bold;
+}
+
+#alert.show {
+    opacity: 1;
+}

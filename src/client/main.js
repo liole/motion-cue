@@ -97,3 +97,16 @@ socket.on('connect', () => {
     console.log(socket.id);
     socket.emit('user', { id: userID });
 });
+
+window.$alert = function (text, timeout = 3000) {
+    var alert = dom('#alert');
+    alert.innerText = text;
+    alert.classList.add('show');
+    if (window.$alertTimer) {
+        clearTimeout(window.$alertTimer);
+    }
+    window.$alertTimer = setTimeout(() => {
+        alert.classList.remove('show');
+        window.$alertTimer = undefined;
+    }, timeout);
+}
