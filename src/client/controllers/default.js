@@ -22,6 +22,7 @@ export class DefaultController {
                 type: 'local',
                 id: this.game.userID,
                 score: 0,
+                break: 0,
                 active: true
             };
         }
@@ -31,10 +32,8 @@ export class DefaultController {
 
     setPlayers(players) {
         this.players = players.map(p => ({
+            ...p,
             type: (this.players.find(cp => cp.id == p.id) || { type: 'remote' }).type,
-            id: p.id,
-            score: p.score || 0,
-            active: p.active
         }));
         this.render();
     }
@@ -68,7 +67,9 @@ export class DefaultController {
         var index = this.players.findIndex(p => p.active);
         var nextIndex = (index + 1) % this.players.length;
         this.players[index].active = false;
+        this.players[index].score += this.players[index].break;
         this.players[nextIndex].active = true;
+        this.players[nextIndex].break = 0;
         this.render();
     }
 
@@ -80,18 +81,25 @@ export class DefaultController {
     }
 
     render() {
-        let panel = dom('#score');
-        panel.clear();
+        let $panel = dom('#score');
+        $panel.clear();
 
         for (let player of this.players) {
-            let score = dom.new('div', {
+            let $score = dom.new('div', {
                 className: `score ${player.type}`,
                 innerText: player.score || 0
             });
             if (player.active) {
-                score.classList.add('active');
+                $score.classList.add('active');
             }
-            panel.append(score);
+            $panel.append($score);
         }
+
+        let active = this.players.find(p => p.active);
+        let $break = dom.new('div', {
+            className: `break`,
+            innerText: active.break || 0
+        });
+        $panel.append($break);
     }
 }

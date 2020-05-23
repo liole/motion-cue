@@ -142,19 +142,38 @@ button.main, input.main {
 #score div {
     display: inline-block;
     padding: 0px 40px;
+    margin: 0px 5px;
 }
 
-.score.active {
+#score .score.active {
     background-color: #ccffcc66;
 }
 
-.score.active.remote {
+#score .score.active.remote {
     animation: pulse 2s infinite
 }
 
-.score.local {
+#score .score.local {
     height: calc(100vh - 50vw - 5px);
     border-bottom: solid 5px #ff0;
+}
+
+#score .break {
+    position: relative;
+    font-weight: normal;
+    margin-left: 50px;
+    color: #cfc;
+}
+
+#score .break:before {
+    position: absolute;
+    content: 'BREAK';
+    top: 5px;
+    left: 0px;
+    width: 100%;
+    font-size: 14px;
+    line-height: 14px;
+    text-align: center;
 }
 
 #alert {
