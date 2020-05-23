@@ -6,10 +6,12 @@ html, body {
     background: repeating-linear-gradient( -45deg, #075, #075 20px, #064 20px, #064 40px );
     font-family: Helvetica, sans-serif;
     overflow-y: hidden;
+    user-select: none;
 }
 
 * {
     box-sizing: border-box;
+    user-select: none;
 }
 
 #ball {
@@ -50,7 +52,6 @@ html, body {
     top: -115px;
     left: 0px;
     right: 0px;
-    user-select: none;
 }
 
 #permissions.show {
