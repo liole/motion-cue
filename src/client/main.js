@@ -56,9 +56,30 @@ socket.on('new-player', player => {
     });
 })
 
+var spaceStart = undefined;
+window.addEventListener('keydown', e => {
+    if (e.key == ' ' && game && !spaceStart) {
+        spaceStart = Date.now();
+    }
+})
+
 window.addEventListener('keyup', e => {
     if (e.key == 't' && game) {
         game.triggerTrace();
+    }
+    if (e.key == 'h' && game) {
+        game.cueBall.inHand = true;
+        game.queueRender();
+    }
+    if (e.key == ' ' && spaceStart) {
+        var duration = Date.now() - spaceStart;
+        console.log(duration, Math.min(duration / 30, 100));
+        game.handle({
+            type: 'shot',
+            id: userID,
+            acceleration: Math.min(duration / 30, 75)
+        });
+        spaceStart = undefined;
     }
 })
 
