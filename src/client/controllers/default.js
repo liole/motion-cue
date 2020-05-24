@@ -77,6 +77,10 @@ export class DefaultController {
         this.render();
     }
 
+    gameOver() {
+        $alert('GAME OVER', Date.now());
+    }
+
     returnToTable(ball) {
         let i = this.game.balls.indexOf(ball);
         Object.assign(ball, this.game.table.initBalls()[i]);

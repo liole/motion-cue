@@ -7,6 +7,7 @@ import { SpinControl } from './spin-control.js';
 import { distPolygon, mirror, dist, sqr, shift, mult, isInside } from './utils.js';
 import { DefaultController } from './controllers/default.js';
 import { SnookerController } from './controllers/snooker.js';
+import { PoolController } from './controllers/pool.js';
 
 const syncInverval = 1000;
 const timeStep = 15; // up to 66.66 fps
@@ -267,7 +268,7 @@ export class Game {
 }
 
 Game.snooker = new Game('snooker', Table.snooker, Cue.snooker, Ball.snookerAll, new SnookerController());
-Game.pool = new Game('pool', Table.pool, Cue.pool, Ball.poolAll, new DefaultController());
+Game.pool = new Game('pool', Table.pool, Cue.pool, Ball.poolAll, new PoolController());
 
 export var games = [
     Game.snooker,
