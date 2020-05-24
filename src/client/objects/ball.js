@@ -102,7 +102,7 @@ Ball.snookerRedN = n => [
 ];
 
 Ball.snookerAll = Ball.snookerRedN(15);
-Ball.snookerShort = Ball.snookerRedN(10);
+Ball.snookerShort = Ball.snookerRedN(6);
 
 Ball.pool = (color = '#fff') => new Ball(1.1, color);
 

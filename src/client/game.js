@@ -269,8 +269,10 @@ export class Game {
 
 Game.snooker = new Game('snooker', Table.snooker, Cue.snooker, Ball.snookerAll, new SnookerController());
 Game.pool = new Game('pool', Table.pool, Cue.pool, Ball.poolAll, new PoolController());
+Game.snooker_6 = new Game('snooker_6', Table.snooker, Cue.snooker, Ball.snookerShort, new SnookerController());
 
 export var games = [
     Game.snooker,
-    Game.pool
+    Game.pool,
+    Game.snooker_6
 ];

@@ -12,7 +12,7 @@ dom('#init-create').on('click', e => {
     for (let game of games) {
         let button = dom.new('button', {
             className: 'main',
-            innerText: game.type.toUpperCase()
+            innerText: game.type.toUpperCase().replace('_', ' ')
         });
         button.on('click', e => createGame(game.type));
         container.append(button);
