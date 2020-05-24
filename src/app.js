@@ -10,21 +10,18 @@ app.use('/', express.static(__dirname + '/client'));
 io.on('connection', (socket) => {
     console.log(`A new socket connected. (ID=${socket.id})`);
 
-    // restore broken connection
-    var userID = storage.findUser(user => user.socket == socket.id);
-    if (userID) {
-        var gameID = storage.findGame(game => game.players.includes(socket.id));
-        if (gameID) {
-            socket.join(gameID);
-        }
-    }
-
     socket.on('user', data => {
         var user = {
             socket: socket.id
         };
         storage.createUser(data.id, user);
         console.log(`User ${data.id} is connected. (ID=${socket.id})`);
+
+        // restore broken connection
+        var gameID = storage.findGame(game => game.players.includes(data.id));
+        if (gameID) {
+            socket.join(gameID);
+        }
     });
 
     socket.on('create', (data, callback) => {
