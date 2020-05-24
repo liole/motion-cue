@@ -177,6 +177,7 @@ button.main, input.main {
 }
 
 #alert {
+    pointer-events: none;
     opacity: 0;
     position: absolute;
     top: 12.5vw;

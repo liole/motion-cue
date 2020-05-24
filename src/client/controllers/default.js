@@ -12,6 +12,10 @@ export class DefaultController {
         return this;
     }
 
+    get active() {
+        return this.players.find(p => p.active);
+    }
+
     isActive(id) {
         return (this.players.find(p => p.id == id) || {}).active;
     }
@@ -68,8 +72,8 @@ export class DefaultController {
         var nextIndex = (index + 1) % this.players.length;
         this.players[index].active = false;
         this.players[index].score += this.players[index].break;
+        this.players[index].break = 0;
         this.players[nextIndex].active = true;
-        this.players[nextIndex].break = 0;
         this.render();
     }
 
@@ -78,6 +82,16 @@ export class DefaultController {
         Object.assign(ball, this.game.table.initBalls()[i]);
         ball.active = true;
         ball.stop();
+    }
+
+    get firstBall() {
+        let firstCollision = this.events.find(e => e.type == 'collision' && e.balls.includes(this.game.cueBall));
+        return firstCollision && firstCollision.balls.find(b => b != this.game.cueBall);
+    }
+
+    get pottedBall() {
+        let pot = this.events.find(e => e.type == 'pot');
+        return pot && pot.ball;
     }
 
     render() {

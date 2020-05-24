@@ -6,6 +6,7 @@ import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
 import { distPolygon, mirror, dist, sqr, shift, mult, isInside } from './utils.js';
 import { DefaultController } from './controllers/default.js';
+import { SnookerController } from './controllers/snooker.js';
 
 const syncInverval = 1000;
 const timeStep = 15; // up to 66.66 fps
@@ -36,7 +37,7 @@ export class Game {
     }
 
     handle(event) {
-        if (!this.controller.isActive(event.id)) {
+        if (!this.controller.isActive(event.id) || this.isMoving) {
             return;
         }
         
@@ -117,12 +118,17 @@ export class Game {
         };
     }
 
+    get isMoving() {
+        return this.balls.some(b => b.isMoving);
+    }
+
     simulate(timestamp) {
         if (!this.timestamp) {
             this.timestamp = timestamp - timeStep - 1e-6;
         }
+        var moving = this.isMoving;
         while (timestamp - this.timestamp > timeStep) {
-            var moving = this.simulateStep();
+            moving = this.simulateStep();
             if (!moving) {
                 this.timestamp = undefined;
                 break;
@@ -212,11 +218,16 @@ export class Game {
     }
 
     setSyncState(state) {
+        var wasMoving = this.isMoving;
         for (let i = 0; i < state.balls.length; ++i) {
             Object.assign(this.balls[i], state.balls[i]);
         }
         Object.assign(this.cue, state.cue);
         Object.assign(this.spinControl, state.spinControl);
+
+        if (!this.isMoving && wasMoving) {
+            this.controller.handle('stop');
+        }
         this.controller.setPlayers(state.players);
         this.queueRender();
     }
@@ -234,16 +245,19 @@ export class Game {
             this.frame = requestAnimationFrame(timestamp => {
                 this.render();
                 this.frame = undefined;
+                let wasMoving = this.isMoving;
                 if (this.simulate(timestamp)) {
                     this.queueRender();
                     if (this.owner && (timestamp - (this.syncTimestamp || 0) > syncInverval)) {
                         this.pushSync();
                         this.syncTimestamp = timestamp;
                     }
-                } else if (this.owner) {
+                } else if (wasMoving) {
                     this.controller.handle('stop');
-                    this.pushSync();
-                    this.owner = false;
+                    if (this.owner) {
+                        this.pushSync();
+                        this.owner = false;
+                    }
                     this.queueRender();
                 }
             })
@@ -252,7 +266,7 @@ export class Game {
 
 }
 
-Game.snooker = new Game('snooker', Table.snooker, Cue.snooker, Ball.snookerAll, new DefaultController());
+Game.snooker = new Game('snooker', Table.snooker, Cue.snooker, Ball.snookerAll, new SnookerController());
 Game.pool = new Game('pool', Table.pool, Cue.pool, Ball.poolAll, new DefaultController());
 
 export var games = [

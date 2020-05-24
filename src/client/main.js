@@ -51,6 +51,7 @@ socket.on('new-player', player => {
         type: 'remote',
         id: player.id,
         score: 0,
+        break: 0,
         active: false
     });
 })
