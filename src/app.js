@@ -10,6 +10,15 @@ app.use('/', express.static(__dirname + '/client'));
 io.on('connection', (socket) => {
     console.log(`A new socket connected. (ID=${socket.id})`);
 
+    // restore broken connection
+    var userID = storage.findUser(user => user.socket == socket.id);
+    if (userID) {
+        var gameID = storage.findGame(game => game.players.includes(socket.id));
+        if (gameID) {
+            socket.join(gameID);
+        }
+    }
+
     socket.on('user', data => {
         var user = {
             socket: socket.id
@@ -61,9 +70,9 @@ io.on('connection', (socket) => {
     });
 
     socket.on('control', data => {
-        var game = storage.findGame(game => game.players.includes(data.id));
-        if (game) {
-            io.to(game).volatile.emit('control', data);
+        var gameID = storage.findGame(game => game.players.includes(data.id));
+        if (gameID) {
+            io.to(gameID).volatile.emit('control', data);
         }
 
     });
