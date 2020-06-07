@@ -149,7 +149,7 @@ export class Game {
             if (true /* bal.isMoving */ ) { // somehow can not split the triangle with this
                 for (let pocket of this.table.pockets.points) {
                     let distPocket = dist(pocket, simBalls[i]);
-                    if (distPocket < this.table.pockets.radius) {
+                    if (distPocket < this.table.pocketRadius) {
                         ball.pot();
                         this.controller.handle('pot', { ball });
                         continue;
@@ -214,6 +214,7 @@ export class Game {
                 angle: this.spinControl.angle,
                 dist: this.spinControl.dist
             },
+            pocketRatio: this.table.pocketRatio,
             players: this.controller.players
         };
     }
@@ -225,6 +226,7 @@ export class Game {
         }
         Object.assign(this.cue, state.cue);
         Object.assign(this.spinControl, state.spinControl);
+        this.table.pocketRatio = state.pocketRatio;
 
         if (!this.isMoving && wasMoving) {
             this.controller.handle('stop');

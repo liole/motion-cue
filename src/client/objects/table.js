@@ -1,5 +1,5 @@
 import dom from './../dom.js';
-import { shift, shuffle } from './../utils.js';
+import { shift, shuffle, mult, add, sub } from './../utils.js';
 
 export class Table {
 
@@ -9,10 +9,37 @@ export class Table {
         this.frame = frame;
         this.pockets = pockets;
         this.initBalls = initBalls;
+        this._pocketRatio = {
+            value: 1.0,
+            rendered: true
+        };
     }
 
     get points() {
-        return this.cushions.points;
+        let points = [...this.cushions.points];
+        if (this.pockets.cushions && this.pocketRatio != 1) {
+            for (let i = 0; i < this.pockets.points.length; ++i) {
+                let pocket = this.pockets.points[i];
+                for (let j of this.pockets.cushions[i]) {
+                    let v = sub(points[j], pocket);
+                    points[j] = add(pocket, mult(v, this.pocketRatio));
+                }
+            }
+        }
+        return points;
+    }
+
+    get pocketRadius() {
+        return this.pockets.radius * this.pocketRatio;
+    }
+
+    get pocketRatio() {
+        return this._pocketRatio.value;
+    }
+
+    set pocketRatio(value) {
+        this._pocketRatio.value = value;
+        this._pocketRatio.rendered = false;
     }
 
     resetBalls(balls) {
@@ -59,6 +86,14 @@ export class Table {
             root.append(this.$cushions, this.$cloth, this.$frame, ...this.$pockets);
         }
 
+        if (!this._pocketRatio.rendered) {
+            for (let $pocket of this.$pockets) {
+                $pocket.set('r', this.pocketRadius);
+            }
+            this.$cloth.set('points', this.points.map(p => `${p.x}, ${p.y}`).join(' '));
+            this._pocketRatio.rendered = true;
+        }
+
         return [this.$cushions, this.$frame, this.$cloth, ...this.$pockets];
     }
 
@@ -66,8 +101,8 @@ export class Table {
 
 Table.snooker = new Table('#228b22', {
     color: '#006400',
-    points: [{ x: 2.91, y: 1.5 }, { x: 5.41, y: 3 }, { x: 47.5, y: 3 }, { x: 49, y: 1.5 }, { x: 49, y: 0.5 }, { x: 51, y: 0.5 }, { x: 51, y: 1.5 },
-        { x: 52.5, y: 3 }, { x: 94.59, y: 3 }, { x: 97.09, y: 1.5 }, { x: 97.09, y: 1 }, { x: 99, y: 1 }, { x: 99, y: 2.91 },
+    points: [{ x: 2.91, y: 1.5 }, { x: 5.41, y: 3 }, { x: 47.5, y: 3 }, { x: 49, y: 1.5 }, { x: 49, y: 0.5 }, { x: 51, y: 0.5 },
+        { x: 51, y: 1.5 }, { x: 52.5, y: 3 }, { x: 94.59, y: 3 }, { x: 97.09, y: 1.5 }, { x: 97.09, y: 1 }, { x: 99, y: 1 }, { x: 99, y: 2.91 },
         { x: 98.5, y: 2.91 }, { x: 97, y: 5.41 }, { x: 97, y: 44.59 }, { x: 98.5, y: 47.09 }, { x: 99, y: 47.09 }, { x: 99, y: 49 }, { x: 97.09, y: 49 },
         { x: 97.09, y: 48.5 }, { x: 94.59, y: 47 }, { x: 52.5, y: 47 }, { x: 51, y: 48.5 }, { x: 51, y: 49.5 }, { x: 49, y: 49.5 },
         { x: 49, y: 48.5 }, { x: 47.5, y: 47 }, { x: 5.41, y: 47 }, { x: 2.91, y: 48.5 }, { x: 2.91, y: 49 }, { x: 1, y: 49 }, { x: 1, y: 47.09 },
@@ -80,6 +115,7 @@ Table.snooker = new Table('#228b22', {
 }, {
     color: '#000000',
     points: [{ x: 2.21, y: 2.21 }, { x: 50, y: 1.5 }, { x: 97.79, y: 2.21 }, { x: 97.79, y: 47.79 }, { x: 50, y: 48.5 }, { x: 2.21, y: 47.79 }],
+    cushions: [[36, 0], [3, 6], [9, 13], [16, 20], [23, 26], [29, 33]],
     radius: 1
 }, () => {
     var middleD = { x: 78.9, y: 25 };
@@ -116,6 +152,7 @@ Table.pool = new Table('#166923', {
 }, {
     color: '#000000',
     points: [{ x: 5, y: 5 }, { x: 50, y: 3.5 }, { x: 95, y: 5 }, { x: 95, y: 45 }, { x: 50, y: 46.5 }, { x: 5, y: 45 }],
+    cushions: [[40, 0], [3, 8], [11, 15], [18, 22], [25, 30], [33, 37]],
     radius: 2.2
 }, () => {
     var cueBall = {

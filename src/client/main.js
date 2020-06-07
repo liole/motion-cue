@@ -64,26 +64,44 @@ window.addEventListener('keydown', e => {
 })
 
 window.addEventListener('keyup', e => {
-    if (e.key == 't' && game) {
-        game.triggerTrace();
-    }
-    if (e.key == 'h' && game) {
-        game.cueBall.inHand = true;
-        game.queueRender();
-    }
-    if (e.key == 'a' && game) {
-        game.cue.showAim = !game.cue.showAim;
-        game.queueRender();
-    }
-    if (e.key == ' ' && spaceStart) {
-        var duration = Date.now() - spaceStart;
-        console.log(duration, Math.min(duration / 30, 100));
-        game.handle({
-            type: 'shot',
-            id: userID,
-            acceleration: Math.min(duration / 30, 75)
-        });
-        spaceStart = undefined;
+    if (game) {
+        if (e.key == 't') {
+            game.triggerTrace();
+        }
+        if (e.key == 'h') {
+            game.cueBall.inHand = true;
+            game.pushSync();
+            game.queueRender();
+        }
+        if (e.key == 'a') {
+            game.cue.showAim = !game.cue.showAim;
+            game.queueRender();
+        }
+        if (e.key >= '0' && e.key <= '9') {
+            let x = +e.key;
+            let min = game.cueBall.radius / game.table.pockets.radius;
+            let max = 2;
+            let k = 1;
+            if (x < 5) {
+                k = min + (1 - min) * x/5;
+            }
+            if (x > 5) {
+                k = 1 + (max - 1) * (x - 5) / 4;
+            }
+            game.table.pocketRatio = k + Number.EPSILON;
+            game.pushSync();
+            game.queueRender();
+        }
+        if (e.key == ' ' && spaceStart) {
+            var duration = Date.now() - spaceStart;
+            console.log(duration, Math.min(duration / 30, 100));
+            game.handle({
+                type: 'shot',
+                id: userID,
+                acceleration: Math.min(duration / 30, 75)
+            });
+            spaceStart = undefined;
+        }
     }
 })
 
