@@ -71,6 +71,10 @@ window.addEventListener('keyup', e => {
         game.cueBall.inHand = true;
         game.queueRender();
     }
+    if (e.key == 'a' && game) {
+        game.cue.showAim = !game.cue.showAim;
+        game.queueRender();
+    }
     if (e.key == ' ' && spaceStart) {
         var duration = Date.now() - spaceStart;
         console.log(duration, Math.min(duration / 30, 100));

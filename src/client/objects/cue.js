@@ -11,6 +11,7 @@ export class Cue {
         this.color = color;
         this.angle = - Math.PI / 4;
         this.tilt = 0; // not supported yet
+        this.showAim = false;
     }
 
     aim(x, y, angle, distance) {
@@ -21,11 +22,14 @@ export class Cue {
     }
 
     render(root) {
-        if (!this.$cue) {
+        if (!this.$cue || !this.$aim) {
             this.$cue = dom.svg('polygon', {
                 style: `fill: ${this.color}`
             });
-            root.append(this.$cue);
+            this.$aim = dom.svg('line', {
+                style: `stroke: #f00; stroke-width: 0.1; stroke-dasharray: 0.5`,
+            })
+            root.append(this.$cue, this.$aim);
         }
 
         let start = { x: this.x, y: this.y };
@@ -39,6 +43,16 @@ export class Cue {
         ];
 
         this.$cue.set('points', points.map(p => `${p.x}, ${p.y}`).join(' '));
+
+        this.$aim.set('visibility', this.showAim ? 'visible' : 'hidden');
+        if (this.showAim) {
+            let aimStart = start;
+            let aimEnd = shift(aimStart, this.angle + Math.PI, 100*Math.SQRT2);
+            this.$aim.set('x1', aimStart.x);
+            this.$aim.set('y1', aimStart.y);
+            this.$aim.set('x2', aimEnd.x);
+            this.$aim.set('y2', aimEnd.y);
+        }
 
         return [this.$cue];
     }
