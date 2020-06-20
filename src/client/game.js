@@ -57,6 +57,7 @@ export class Game {
             return;
         }
         this.triggerTrace(this.trace);
+        this.startPrediction();
         switch (event.type) {
             case 'cue':
                 this.cueBall.inHand = false;
@@ -90,12 +91,13 @@ export class Game {
                 if (this.controller.enabled) {
                     console.log(energy, this.cueBall.velocity, this.cueBall.spin);
                 }
+                this.stopPrediction();
                 break;
         }
         this.queueRender();
     }
 
-    predictGame() {
+    startPrediction() {
         if (!this.predictedGame) {
             let cue = new Cue(this.cue.length, this.cue.width, this.cue.color);
             let balls = this.balls.map(ball => new Ball(ball.radius, ball.color));
@@ -109,6 +111,19 @@ export class Game {
                 ball.visible = false;
                 ball.inHand = false;
             }
+        }
+    }
+
+    stopPrediction() {
+        if (this.predictedGame) {
+            this.predictedGame.dispose();
+            this.predictedGame = undefined;
+        }
+    }
+
+    predictGame() {
+        if (!this.predictedGame) {
+            return;
         }
 
         for (let i = 0; i < this.balls.length; ++i) {
@@ -293,6 +308,7 @@ export class Game {
                     }
                 } else if (wasMoving) {
                     this.controller.handle('stop');
+                    this.stopPrediction();
                     if (this.owner) {
                         this.pushSync && this.pushSync();
                         this.owner = false;
@@ -302,9 +318,8 @@ export class Game {
             });
             if (this.predict) {
                 this.predictGame();
-            } else if (this.predictedGame) {
-                this.predictedGame.dispose();
-                this.predictedGame = undefined;
+            } else {
+                this.stopPrediction();
             }
         }
     }
