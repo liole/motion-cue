@@ -30,7 +30,7 @@ export function distPolygon(points, p) {
         let pIn = middle(mirror(pts[i], pts[i+1], p), p);
         let dp = dot(vector(pts[i], pIn), vector(pts[i+1], pIn));
         if (dp > 0) {
-            d = Math.max(dist(pts[i], p), dist(pts[i+1], p));
+            d = Math.min(dist(pts[i], p), dist(pts[i+1], p));
         }
         if (d < min) {
             min = d;

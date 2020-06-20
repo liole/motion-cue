@@ -202,14 +202,6 @@ export class Game {
             if (!ball.active || ball.inHand) continue;
 
             if (true /* bal.isMoving */ ) { // somehow can not split the triangle with this
-                for (let pocket of this.table.pockets.points) {
-                    let distPocket = dist(pocket, simBalls[i]);
-                    if (distPocket < this.table.pocketRadius) {
-                        ball.pot();
-                        this.controller.handle('pot', { ball });
-                        continue;
-                    }
-                }
                 let distTable = distPolygon(this.table.points, simBalls[i]);
                 if (distTable[0] < ball.radius) {
                     let fakeBall = mirror(distTable[1], distTable[2], ball);
@@ -228,6 +220,14 @@ export class Game {
                         this.controller.handle('collision', { balls: [ball, otherBall] });
                         simBalls[i] = ball.simulate(dt);
                         simBalls[j] = otherBall.simulate(dt);
+                    }
+                }
+                for (let pocket of this.table.pockets.points) {
+                    let distPocket = dist(pocket, simBalls[i]);
+                    if (distPocket < this.table.pocketRadius) {
+                        ball.pot();
+                        this.controller.handle('pot', { ball });
+                        break;
                     }
                 }
             }
