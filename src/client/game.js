@@ -4,7 +4,7 @@ import { Ball } from './objects/ball.js';
 import { collide, applyShapes } from './physics.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
-import { distPolygon, mirror, dist, sqr, shift, mult, isInside, add, sub } from './utils.js';
+import { distPolygon, mirror, dist, sqr, shift, mult, isInside, add, sub, vector, dot } from './utils.js';
 import { DefaultController } from './controllers/default.js';
 import { SnookerController } from './controllers/snooker.js';
 import { PoolController } from './controllers/pool.js';
@@ -65,13 +65,15 @@ export class Game {
                 this.aimCue(angle);
                 break;
             case 'ball':
-                let x = this.init.ball.spin.x + Math.tan(this.init.angle.alpha - event.alpha) * 2;
-                let y = this.init.ball.spin.y + Math.tan(event.beta - this.init.angle.beta) * 2;
+                let dx = Math.tan(this.init.angle.alpha - event.alpha);
+                let dy = Math.tan(event.beta - this.init.angle.beta);
                 if (this.cueBall.inHand) {
-                    this.cueBall.x = this.init.ball.pos.x + x * 15;
-                    this.cueBall.y = this.init.ball.pos.y - y * 15;
+                    this.cueBall.x = this.init.ball.pos.x + dx * 30;
+                    this.cueBall.y = this.init.ball.pos.y - dy * 30;
                     this.stopPrediction();
                 } else {
+                    let x = this.init.ball.spin.x + dx * 2;
+                    let y = this.init.ball.spin.y + dy * 2;
                     this.spinControl.aim(x, y);
                 }
                 break;
@@ -95,7 +97,25 @@ export class Game {
                 this.stopPrediction();
                 break;
         }
+        if (!this.isMoving) {
+            this.limitSpin();
+        }
         this.queueRender();
+    }
+
+    limitSpin() {
+        let distTable = distPolygon(this.table.points, this.cueBall);
+        let vBall = vector(mirror(distTable[1], distTable[2], this.cueBall), this.cueBall);
+        let vCue = vector(shift(this.cue, this.cue.angle, this.cue.length), this.cue);
+        let coefAngle = Math.max(dot(vBall, vCue), 0);
+        let coefDist = 1 - Math.min(Math.max(distTable[0] - this.cueBall.radius, 0) / (2 * this.cueBall.radius), 1);
+        let coef = Math.sqrt(coefAngle * coefDist);
+        let minHeight = (7/5)*coef - 1;
+        console.log(coefAngle, coefDist, minHeight);
+        let spinAim = this.spinControl.toXY();
+        if (spinAim.y < minHeight) {
+            this.spinControl.aim(spinAim.x, minHeight);
+        }
     }
 
     startPrediction() {
