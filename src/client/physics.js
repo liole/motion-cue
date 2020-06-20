@@ -7,7 +7,7 @@ export function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25
 
     let totalSpeed = len(velocity) || 1;
     let totalBalance = len(sub(velocity, mult(spin, radius))) || 1;
-    
+
     return {
         x: x + velocity.x * dt,
         y: y + velocity.y * dt,
@@ -85,7 +85,7 @@ export function applyShapes(balls, table, maxRounds = 10) {
 
     for(let round = 0; round < maxRounds; ++round) {
 
-        for (let ball of balls.filter(b => !fixed.includes(b))) {
+        for (let ball of balls.filter(b => b.active && !fixed.includes(b))) {
             let distTable = distPolygon(table, ball);
             let overlap = ball.radius - distTable[0];
             if (overlap > 0) {
@@ -99,6 +99,9 @@ export function applyShapes(balls, table, maxRounds = 10) {
 
         for (let i = 0; i < balls.length; ++i) {
             for (let j = i+1; j < balls.length; ++j) {
+                if (!balls[i].active || !balls[j].active) {
+                    continue;
+                }
                 let distBalls = dist(balls[i], balls[j]);
                 let overlap = balls[i].radius + balls[j].radius - distBalls;
                 if (overlap > 0) {
