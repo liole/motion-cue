@@ -67,6 +67,7 @@ window.addEventListener('keyup', e => {
     if (game) {
         if (e.key == 't') {
             game.triggerTrace();
+            game.queueRender();
         }
         if (e.key == 'h') {
             game.cueBall.inHand = true;
@@ -78,7 +79,7 @@ window.addEventListener('keyup', e => {
             game.queueRender();
         }
         if (e.key == 'p') {
-            game.predict = !game.predict;
+            game.triggerPredict();
             game.queueRender();
         }
         if (e.key >= '0' && e.key <= '9') {

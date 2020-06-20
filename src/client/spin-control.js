@@ -7,6 +7,11 @@ export class SpinControl {
         this.reset();
     }
 
+    copyTo(spinControl) {
+        spinControl.dist = this.dist;
+        spinControl.angle = this.angle;
+    }
+
     toXY() {
         return {
             x: this.dist * Math.cos(this.angle),

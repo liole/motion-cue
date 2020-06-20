@@ -11,7 +11,7 @@ import { PoolController } from './controllers/pool.js';
 
 const syncInverval = 1000;
 const timeStep = 15; // up to 66.66 fps
-const predictRange = 2000;
+const predictRange = 1000;
 
 export class Game {
 
@@ -70,6 +70,7 @@ export class Game {
                 if (this.cueBall.inHand) {
                     this.cueBall.x = this.init.ball.pos.x + x * 15;
                     this.cueBall.y = this.init.ball.pos.y - y * 15;
+                    this.stopPrediction();
                 } else {
                     this.spinControl.aim(x, y);
                 }
@@ -89,7 +90,7 @@ export class Game {
                 this.timestamp = undefined;
                 this.spinControl.reset();
                 if (this.controller.enabled) {
-                    console.log(energy, this.cueBall.velocity, this.cueBall.spin);
+                    console.log(event.acceleration, this.cueBall.velocity, this.cueBall.spin);
                 }
                 this.stopPrediction();
                 break;
@@ -98,11 +99,12 @@ export class Game {
     }
 
     startPrediction() {
-        if (!this.predictedGame) {
+        if (this.predict && !this.predictedGame) {
             let cue = new Cue(this.cue.length, this.cue.width, this.cue.color);
             let balls = this.balls.map(ball => new Ball(ball.radius, ball.color));
             let controller = new DefaultController();
             this.predictedGame = new Game(this.type, this.table, cue, balls, controller);
+            this.predictedGame.spinControl = new SpinControl();
             this.predictedGame.trace = true;
             controller.enabled = false;
             controller.addPlayer();
@@ -130,13 +132,19 @@ export class Game {
             this.balls[i].copyTo(this.predictedGame.balls[i]);
         }
         this.cue.copyTo(this.predictedGame.cue);
+        this.spinControl.copyTo(this.predictedGame.spinControl);
 
         this.predictedGame.handle({
             type: 'shot',
-            acceleration: 15
+            acceleration: 25
         });
         this.predictedGame.timestamp = performance.now() - predictRange;
         this.predictedGame.simulate();
+    }
+
+    triggerPredict(predict = !this.predict) {
+        this.predict = predict;
+        this.startPrediction();
     }
 
     triggerTrace(trace = !this.trace) {
@@ -144,7 +152,6 @@ export class Game {
         for (let ball of this.balls) {
             ball.setTrace(this.trace);
         }
-        this.queueRender();
     }
 
     initControl(event) {
