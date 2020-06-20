@@ -5,17 +5,19 @@ export function simulate({ x, y, velocity, spin, radius }, dt, fs = 1, fv = 0.25
     spin = spin || { x: 0, y: 0, z: 0 };
     radius = radius || 1;
 
-    let totalSpeed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) || 1;
+    let totalSpeed = len(velocity) || 1;
+    let totalBalance = len(sub(velocity, mult(spin, radius))) || 1;
+    
     return {
         x: x + velocity.x * dt,
         y: y + velocity.y * dt,
         velocity: {
-            x: velocity.x - Math.sign(velocity.x - spin.x * radius) * dt * k + velocity.y / totalSpeed * spin.z * radius * dt * kz - (velocity.x - spin.x * radius) * dt * fv,
-            y: velocity.y - Math.sign(velocity.y - spin.y * radius) * dt * k - velocity.x / totalSpeed * spin.z * radius * dt * kz - (velocity.y - spin.y * radius) * dt * fv
+            x: velocity.x - (velocity.x - spin.x * radius) / totalBalance * dt * k + velocity.y / totalSpeed * spin.z * radius * dt * kz - (velocity.x - spin.x * radius) * dt * fv,
+            y: velocity.y - (velocity.y - spin.y * radius) / totalBalance * dt * k - velocity.x / totalSpeed * spin.z * radius * dt * kz - (velocity.y - spin.y * radius) * dt * fv
         },
         spin: {
-            x: spin.x - Math.sign(spin.x - velocity.x / radius) * dt * k - spin.x * dt * fs,
-            y: spin.y - Math.sign(spin.y - velocity.y / radius) * dt * k - spin.y * dt * fs,
+            x: spin.x - (spin.x - velocity.x / radius) / (totalBalance / radius) * dt * k - spin.x * dt * fs,
+            y: spin.y - (spin.y - velocity.y / radius) / (totalBalance / radius) * dt * k - spin.y * dt * fs,
             z: spin.z - spin.z * dt * kz - spin.z * dt * fs
         }
     };
