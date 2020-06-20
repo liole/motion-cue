@@ -111,7 +111,6 @@ export class Game {
         let coefDist = 1 - Math.min(Math.max(distTable[0] - this.cueBall.radius, 0) / (2 * this.cueBall.radius), 1);
         let coef = Math.sqrt(coefAngle * coefDist);
         let minHeight = (7/5)*coef - 1;
-        console.log(coefAngle, coefDist, minHeight);
         let spinAim = this.spinControl.toXY();
         if (spinAim.y < minHeight) {
             this.spinControl.aim(spinAim.x, minHeight);

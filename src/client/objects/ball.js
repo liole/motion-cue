@@ -32,6 +32,7 @@ export class Ball {
     setTrace(trace) {
         this.trace = trace;
         this.tracePoints = [];
+        this.traceNow();
     }
 
     get isMoving() {
@@ -62,11 +63,15 @@ export class Ball {
         this.y = data.y;
         this.velocity = data.velocity;
         this.spin = data.spin;
+        this.traceNow();
+    }
+
+    traceNow() {
         if (this.trace) {
             this.tracePoints.push({ x: this.x, y: this.y });
         }
     }
-
+    
     retrace() {
         let end = this.tracePoints.length - 1;
         this.tracePoints[end] = { x: this.x, y: this.y };
@@ -84,10 +89,15 @@ export class Ball {
             this.$ball.set('r', this.radius);
             root.append(this.$ball);
 
-            this.$trace = dom.svg('polyline', {
+            this.$trace = {};
+            this.$trace.path = dom.svg('polyline', {
                 style: `fill: none; stroke: ${this.color}; stroke-width: 0.1px; stroke-linejoin: round`
             });
-            root.insertAfter(this.$trace, dom('#table-surface'));
+            this.$trace.shape = dom.svg('polyline', {
+                style: `fill: none; stroke: ${this.color}; stroke-width: ${this.radius*2}px; stroke-opacity: 0.1; stroke-linecap: round; stroke-linejoin: round`
+            });
+            root.insertAfter(this.$trace.shape, dom('#table-surface'));
+            root.insertAfter(this.$trace.path, dom('#table-surface'));
         }
 
         this.$ball.set('visibility', this.active && this.visible ? 'visible' : 'hidden');
@@ -95,15 +105,18 @@ export class Ball {
         this.$ball.set('cx', this.x);
         this.$ball.set('cy', this.y);
 
-        this.$trace.set('visibility', this.trace ? 'visible' : 'hidden');
-        this.$trace.set('points', this.tracePoints.map(p => `${p.x}, ${p.y}`).join(' '));
+        for (let $trace of [this.$trace.path, this.$trace.shape]) {
+            $trace.set('visibility', this.trace ? 'visible' : 'hidden');
+            $trace.set('points', this.tracePoints.map(p => `${p.x}, ${p.y}`).join(' '));
+        }
 
         return [this.$ball, this.$trace];
     }
 
     dispose() {
         this.$ball && this.$ball.remove();
-        this.$trace && this.$trace.remove();
+        this.$trace && this.$trace.path.remove();
+        this.$trace && this.$trace.shape.remove();
     }
 
 }
