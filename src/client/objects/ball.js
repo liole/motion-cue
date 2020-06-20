@@ -67,6 +67,11 @@ export class Ball {
         }
     }
 
+    retrace() {
+        let end = this.tracePoints.length - 1;
+        this.tracePoints[end] = { x: this.x, y: this.y };
+    }
+
     pot() {
         this.active = false;
     }

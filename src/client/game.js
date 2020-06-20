@@ -4,7 +4,7 @@ import { Ball } from './objects/ball.js';
 import { collide, applyShapes } from './physics.js';
 import dom from './dom.js';
 import { SpinControl } from './spin-control.js';
-import { distPolygon, mirror, dist, sqr, shift, mult, isInside } from './utils.js';
+import { distPolygon, mirror, dist, sqr, shift, mult, isInside, add, sub } from './utils.js';
 import { DefaultController } from './controllers/default.js';
 import { SnookerController } from './controllers/snooker.js';
 import { PoolController } from './controllers/pool.js';
@@ -87,7 +87,9 @@ export class Game {
                 this.cueBall.spin.z = planeSpin.x;
                 this.timestamp = undefined;
                 this.spinControl.reset();
-                console.log(energy, this.cueBall.velocity, this.cueBall.spin);
+                if (this.controller.enabled) {
+                    console.log(energy, this.cueBall.velocity, this.cueBall.spin);
+                }
                 break;
         }
         this.queueRender();
@@ -189,6 +191,7 @@ export class Game {
                 let distTable = distPolygon(this.table.points, simBalls[i]);
                 if (distTable[0] < ball.radius) {
                     let fakeBall = mirror(distTable[1], distTable[2], ball);
+                    fakeBall.velocity = sub(mirror(distTable[1], distTable[2], add(ball, ball.velocity)), fakeBall);
                     collide(ball, fakeBall);
                     this.controller.handle('cushion', { ball });
                     simBalls[i] = ball.simulate(dt);
