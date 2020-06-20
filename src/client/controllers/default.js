@@ -5,6 +5,7 @@ export class DefaultController {
     constructor() {
         this.events = [];
         this.players = [];
+        this.enabled = true;
     }
 
     attach(game) {
@@ -43,6 +44,10 @@ export class DefaultController {
     }
 
     handle(type, event = {}) {
+        if (!this.enabled) {
+            return;
+        }
+
         if (type == 'stop') {
             this.process();
             this.events = [];
@@ -99,6 +104,10 @@ export class DefaultController {
     }
 
     render() {
+        if (!this.enabled) {
+            return;
+        }
+
         let $panel = dom('#score');
         $panel.clear();
 

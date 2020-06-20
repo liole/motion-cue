@@ -6,7 +6,16 @@ export class Ball {
     constructor(radius, color) {
         this.radius = radius;
         this.color = color;
+        this.visible = true;
         this.reset({ x: 50, y: 25 });
+    }
+
+    copyTo(ball) {
+        ball.x = this.x;
+        ball.y = this.y;
+        ball.velocity = { x: this.velocity.x, y: this.velocity.y };
+        ball.spin = { x: this.spin.x, y: this.spin.y, z: this.spin.z };
+        ball.active = this.active;
     }
 
     reset(point) {
@@ -19,6 +28,7 @@ export class Ball {
         this.inHand = false;
         this.tracePoints = [];
     }
+
     setTrace(trace) {
         this.trace = trace;
         this.tracePoints = [];
@@ -75,7 +85,7 @@ export class Ball {
             root.insertAfter(this.$trace, dom('#table-surface'));
         }
 
-        this.$ball.set('visibility', this.active ? 'visible' : 'hidden');
+        this.$ball.set('visibility', this.active && this.visible ? 'visible' : 'hidden');
         this.$ball.set('stroke-opacity', this.inHand ? 0.5 : 0);
         this.$ball.set('cx', this.x);
         this.$ball.set('cy', this.y);
@@ -83,7 +93,12 @@ export class Ball {
         this.$trace.set('visibility', this.trace ? 'visible' : 'hidden');
         this.$trace.set('points', this.tracePoints.map(p => `${p.x}, ${p.y}`).join(' '));
 
-        return [this.$ball];
+        return [this.$ball, this.$trace];
+    }
+
+    dispose() {
+        this.$ball && this.$ball.remove();
+        this.$trace && this.$trace.remove();
     }
 
 }

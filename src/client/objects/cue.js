@@ -12,6 +12,14 @@ export class Cue {
         this.angle = - Math.PI / 4;
         this.tilt = 0; // not supported yet
         this.showAim = false;
+        this.visible = true;
+    }
+
+    copyTo(cue) {
+        cue.x = this.x;
+        cue.y = this.y;
+        cue.angle = this.angle;
+        cue.tilt = this.tilt;
     }
 
     aim(x, y, angle, distance) {
@@ -42,6 +50,7 @@ export class Cue {
             shift(start, this.angle + Math.PI / 2, this.width[0] / 2)
         ];
 
+        this.$cue.set('visibility', this.visible ? 'visible' : 'hidden');
         this.$cue.set('points', points.map(p => `${p.x}, ${p.y}`).join(' '));
 
         this.$aim.set('visibility', this.showAim ? 'visible' : 'hidden');
@@ -54,7 +63,12 @@ export class Cue {
             this.$aim.set('y2', aimEnd.y);
         }
 
-        return [this.$cue];
+        return [this.$cue, this.$aim];
+    }
+
+    dispose() {
+        this.$cue && this.$cue.remove();
+        this.$aim && this.$aim.remove();
     }
 
 }

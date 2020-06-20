@@ -77,6 +77,10 @@ window.addEventListener('keyup', e => {
             game.cue.showAim = !game.cue.showAim;
             game.queueRender();
         }
+        if (e.key == 'p') {
+            game.predict = !game.predict;
+            game.queueRender();
+        }
         if (e.key >= '0' && e.key <= '9') {
             let x = +e.key;
             let min = game.cueBall.radius / game.table.pockets.radius;

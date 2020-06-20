@@ -36,6 +36,7 @@ Currently in-control player will be shown with white background. Your local scor
 ## Shortcuts
 - Press the `t` key to start tracing the path of all balls.
 - Press the `a` key to show cue aiming direction. (this is not a predicted path of the ball)
+- Press the `p` key to show predicted paths of the balls (2 seconds in the future after medium strength shot)
 - Press the `h` key to take the cue ball in hand. (not always legal, but currently allowed)
 - Press numeric keys `0` - `9` to adjust the size of the pockets.
     - `0` - pocket is the size of the ball (*+ epsylon*)

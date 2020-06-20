@@ -11,6 +11,7 @@ import { PoolController } from './controllers/pool.js';
 
 const syncInverval = 1000;
 const timeStep = 15; // up to 66.66 fps
+const predictRange = 2000;
 
 export class Game {
 
@@ -22,6 +23,7 @@ export class Game {
         this.controller = controller.attach(this);
         this.spinControl = SpinControl.default;
         this.trace = false;
+        this.predict = false;
         this.owner = false;
 
         this.table.resetBalls(this.balls);
@@ -91,6 +93,35 @@ export class Game {
         this.queueRender();
     }
 
+    predictGame() {
+        if (!this.predictedGame) {
+            let cue = new Cue(this.cue.length, this.cue.width, this.cue.color);
+            let balls = this.balls.map(ball => new Ball(ball.radius, ball.color));
+            let controller = new DefaultController();
+            this.predictedGame = new Game(this.type, this.table, cue, balls, controller);
+            this.predictedGame.trace = true;
+            controller.enabled = false;
+            controller.addPlayer();
+            cue.visible = false;
+            for (let ball of balls) {
+                ball.visible = false;
+                ball.inHand = false;
+            }
+        }
+
+        for (let i = 0; i < this.balls.length; ++i) {
+            this.balls[i].copyTo(this.predictedGame.balls[i]);
+        }
+        this.cue.copyTo(this.predictedGame.cue);
+
+        this.predictedGame.handle({
+            type: 'shot',
+            acceleration: 15
+        });
+        this.predictedGame.timestamp = performance.now() - predictRange;
+        this.predictedGame.simulate();
+    }
+
     triggerTrace(trace = !this.trace) {
         this.trace = trace;
         for (let ball of this.balls) {
@@ -120,10 +151,10 @@ export class Game {
     }
 
     get isMoving() {
-        return this.balls.some(b => b.isMoving);
+        return this.balls.some(b => b.isMoving) && this.controller.enabled;
     }
 
-    simulate(timestamp) {
+    simulate(timestamp = performance.now()) {
         if (!this.timestamp) {
             this.timestamp = timestamp - timeStep - 1e-6;
         }
@@ -136,7 +167,7 @@ export class Game {
             }
             this.timestamp += timeStep;
         }
-        return moving;
+        return this.isMoving;
     }
 
     simulateStep(dt = timeStep / 1000) {
@@ -237,10 +268,12 @@ export class Game {
 
     render() {
         let board = dom('#board');
-        this.table.render(board);
+        if (this.controller.enabled) {
+            this.spinControl.render(dom('#spin-view'));
+            this.table.render(board);
+        }
         this.balls.forEach(b => b.render(board));
         this.cue.render(board);
-        this.spinControl.render(dom('#spin-view'));
     }
     
     queueRender() {
@@ -252,19 +285,34 @@ export class Game {
                 if (this.simulate(timestamp)) {
                     this.queueRender();
                     if (this.owner && (timestamp - (this.syncTimestamp || 0) > syncInverval)) {
-                        this.pushSync();
+                        this.pushSync && this.pushSync();
                         this.syncTimestamp = timestamp;
                     }
                 } else if (wasMoving) {
                     this.controller.handle('stop');
                     if (this.owner) {
-                        this.pushSync();
+                        this.pushSync && this.pushSync();
                         this.owner = false;
                     }
                     this.queueRender();
                 }
-            })
+            });
+            if (this.predict) {
+                this.predictGame();
+            } else if (this.predictedGame) {
+                this.predictedGame.dispose();
+                this.predictedGame = undefined;
+            }
         }
+    }
+
+    dispose() {
+        if (this.controller.enabled) {
+            this.spinControl.dispose();
+            this.table.dispose();
+        }
+        this.cue.dispose();
+        this.balls.forEach(ball => ball.dispose());
     }
 
 }

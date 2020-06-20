@@ -97,6 +97,13 @@ export class Table {
         return [this.$cushions, this.$frame, this.$cloth, ...this.$pockets];
     }
 
+    dispose() {
+        this.$cushions && this.$cushions.remove();
+        this.$frame && this.$frame.remove();
+        this.$cloth && this.$cloth.remove();
+        this.$pockets && this.$pockets.forEach($pocket => $pocket.remove());
+    }
+
 }
 
 Table.snooker = new Table('#228b22', {
