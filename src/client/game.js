@@ -104,16 +104,38 @@ export class Game {
     }
 
     limitSpin() {
-        let distTable = distPolygon(this.table.points, this.cueBall);
-        let vBall = vector(mirror(distTable[1], distTable[2], this.cueBall), this.cueBall);
         let vCue = vector(shift(this.cue, this.cue.angle, this.cue.length), this.cue);
-        let coefAngle = Math.max(dot(vBall, vCue), 0);
-        let coefDist = 1 - Math.min(Math.max(distTable[0] - this.cueBall.radius, 0) / (2 * this.cueBall.radius), 1);
-        let coef = Math.sqrt(coefAngle * coefDist);
-        let minHeight = (7/5)*coef - 1;
+        let distTable = distPolygon(this.table.points, this.cueBall);
+        let coefs = [
+            ...this.balls.filter(b => b.active && b != this.cueBall),
+            mirror(distTable[1], distTable[2], this.cueBall)
+        ].map(ball => {
+            let distBall = dist(ball, this.cueBall);
+            let vBall = vector(ball, this.cueBall);
+            let minDist = (ball.radius || this.cueBall.radius) + this.cueBall.radius;
+            let dotBC = dot(vBall, vCue)
+            let coefAngle = Math.max(ball.radius ? (dotBC - 0.5) * 2 : dotBC, 0);
+            let coefDist = 1 - Math.min(Math.max(distBall - minDist, 0) / minDist, 1);
+            return Math.sqrt(coefAngle * coefDist);
+        });
+        let minHeight = (7/5)*Math.max(...coefs) - 1;
         let spinAim = this.spinControl.toXY();
         if (spinAim.y < minHeight) {
             this.spinControl.aim(spinAim.x, minHeight);
+            if (!this.blockedSpin) {
+                this.blockedSpin = spinAim;
+            }
+        } else if (this.blockedSpin) {
+            if (Math.abs(this.blockedSpin.x - spinAim.x) < 1e-6) {
+                if (this.blockedSpin.y < minHeight) {
+                    this.spinControl.aim(spinAim.x, minHeight);
+                } else {
+                    this.spinControl.aim(this.blockedSpin.x, this.blockedSpin.y);
+                    this.blockedSpin = undefined;
+                }
+            } else {
+                this.blockedSpin = undefined;
+            }
         }
     }
 
