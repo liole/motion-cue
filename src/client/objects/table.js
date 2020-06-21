@@ -3,12 +3,13 @@ import { shift, shuffle, mult, add, sub } from './../utils.js';
 
 export class Table {
 
-    constructor(color, cushions, frame, pockets, initBalls) {
+    constructor(color, cushions, frame, pockets, initBalls, decorate) {
         this.color = color;
         this.cushions = cushions;
         this.frame = frame;
         this.pockets = pockets;
         this.initBalls = initBalls;
+        this.decorate = decorate;
         this._pocketRatio = {
             value: 1.0,
             rendered: true
@@ -84,6 +85,8 @@ export class Table {
                 return $pocket;
             })
             root.append(this.$cushions, this.$cloth, this.$frame, ...this.$pockets);
+
+            this.$decorations = this.decorate && this.decorate(root);
         }
 
         if (!this._pocketRatio.rendered) {
@@ -102,6 +105,7 @@ export class Table {
         this.$frame && this.$frame.remove();
         this.$cloth && this.$cloth.remove();
         this.$pockets && this.$pockets.forEach($pocket => $pocket.remove());
+        this.$decorations && this.$decorations.forEach($decoration => $decoration.remove());
     }
 
 }
@@ -141,6 +145,22 @@ Table.snooker = new Table('#228b22', {
         { x: 19.736, y: 22.805 }, { x: 19.736, y: 24.268 }, { x: 19.736, y: 25.732 }, { x: 19.736, y: 27.159 },
         { x: 18.469, y: 22.074 }, { x: 18.469, y: 23.537 }, { x: 18.469, y: 25 }, { x: 18.469, y: 26.463 }, { x: 18.469, y: 27.926 }
     ];
+}, root => {
+    let options = {
+        style: `fill: none; stroke: #fff; stroke-width: 0.15`
+    };
+    let $line = dom.svg('line', options);
+    let $arc = dom.svg('path', options);
+
+    $line.set('x1', 78.9);
+    $line.set('y1', 3);
+    $line.set('x2', 78.9);
+    $line.set('y2', 47);
+
+    $arc.set('d', `M78.9 16.97 A8.03 8.03 0 0 1 78.9 33.06`);
+
+    root.append($line, $arc);
+    return [$line, $arc];
 });
 
 Table.pool = new Table('#166923', {
