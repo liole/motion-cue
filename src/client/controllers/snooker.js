@@ -72,6 +72,7 @@ export class SnookerController extends DefaultController {
         }
 
         if (!this.game.balls.some(b => b.active && b != this.game.cueBall)) {
+            this.break();
             this.gameOver();
         }
     }
