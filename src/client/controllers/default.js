@@ -18,19 +18,17 @@ export class DefaultController {
     }
 
     isActive(id) {
-        return (this.players.find(p => p.id == id) || {}).active;
+        return this.players.some(p => p.id == id && p.active);
     }
 
     addPlayer(player) {
-        if (!player) {
-            player = {
-                type: 'local',
-                id: this.game.userID,
-                score: 0,
-                break: 0,
-                active: true
-            };
-        }
+        player = Object.assign({
+            type: 'local',
+            id: this.game.userID,
+            score: 0,
+            break: 0,
+            active: true
+        }, player || {});
         this.players.push(player);
         this.render();
     }

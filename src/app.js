@@ -46,9 +46,11 @@ io.on('connection', (socket) => {
         if (userID) {
             var game = storage.getGame(data.id);
             if (game) {
-                storage.deletePlayerFromGames(userID);
+                if (!data.secondary) {
+                    socket.join(data.id);
+                    storage.deletePlayerFromGames(userID);
+                }
                 storage.updateGame(data.id, game => game.players.push(userID));
-                socket.join(data.id);
                 socket.to(data.id).emit('new-player', { id: userID });
                 console.log(`User ${userID} joind game ${data.id}.`);
                 callback(game);

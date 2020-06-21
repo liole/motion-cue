@@ -32,6 +32,8 @@ dom('#join-id').on('keyup', e => {
     }
 });
 
+dom('#add-player').on('click', addSecondaryPlayer);
+
 socket.on('cue', () => dom('#connect-box').hide());
 
 socket.on('control', event => {
@@ -50,8 +52,6 @@ socket.on('new-player', player => {
     game.controller.addPlayer({
         type: 'remote',
         id: player.id,
-        score: 0,
-        break: 0,
         active: false
     });
 })
@@ -117,11 +117,22 @@ function createGame(type) {
 }
 
 function joinGame(id) {
-    socket.emit('join', { id }, ({ type }) => {
+    socket.emit('join', { id }, ({ type, error }) => {
         if (type) {
             startGame(type, id);
             socket.emit('request-sync', { id });
+        } else if (error) {
+            $alert(error);
         }
+    });
+}
+
+function addSecondaryPlayer() {
+    socket.emit('join', {
+        id: game.id,
+        secondary: true
+    }, () => {
+        game.controller.addPlayer({ active: false });
     });
 }
 

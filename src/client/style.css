@@ -176,6 +176,19 @@ button.main, input.main {
     text-align: center;
 }
 
+.bottom-bar {
+    display: inline-block;
+    vertical-align: top;
+    line-height: calc(100vh - 50vw);
+}
+
+#add-player {
+    font-size: 40px;
+    color: #fff;
+    padding: 5px 15px;
+    font-weight: normal !important;
+}
+
 #alert {
     pointer-events: none;
     opacity: 0;
