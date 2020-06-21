@@ -46,12 +46,14 @@ io.on('connection', (socket) => {
         if (userID) {
             var game = storage.getGame(data.id);
             if (game) {
-                if (!data.secondary) {
-                    socket.join(data.id);
-                    storage.deletePlayerFromGames(userID);
+                socket.join(data.id);
+                if (!game.players.includes(userID)) {
+                    if (!data.secondary) {
+                        storage.deletePlayerFromGames(userID);
+                    }
+                    storage.updateGame(data.id, game => game.players.push(userID));
+                    socket.to(data.id).emit('new-player', { id: userID });
                 }
-                storage.updateGame(data.id, game => game.players.push(userID));
-                socket.to(data.id).emit('new-player', { id: userID });
                 console.log(`User ${userID} joind game ${data.id}.`);
                 callback(game);
                 socket.broadcast.emit('cue-request', { id: userID });
@@ -77,10 +79,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on('request-sync', data => {
-        var game = storage.getGame(data.id);
-        if (game && game.players.length) {
-            var user = storage.getUser(game.players[0]);
-            io.to(user.socket).emit('request-sync');
+        var userID = storage.findUser(user => user.socket == socket.id);
+        if (userID) {
+            var game = storage.getGame(data.id);
+            if (game && game.players.length) {
+                var user = storage.getUser(game.players.find(p => p != userID));
+                if (user) {
+                    io.to(user.socket).emit('request-sync');
+                }
+            }
         }
     });
 
