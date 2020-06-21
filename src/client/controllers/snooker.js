@@ -37,18 +37,18 @@ export class SnookerController extends DefaultController {
     process() {
         super.process();
 
+        if (!this.sequence) {
+            for (let event of this.events.filter(e => e.type == 'pot' && e.ball.color != this.red.color)) {
+                this.returnToTable(event.ball);
+            }
+        }
+
         if (!this.firstBall ||
             this.firstBall.color != this.ballOn.color ||
             this.events.filter(e => e.type == 'pot').length > 1 ||
             this.pottedBall && this.pottedBall.color != this.ballOn.color ||
             this.events.some(e => e.type == 'pot' && e.ball == this.game.cueBall) ||
             this.events.some(e => e.type == 'out' && e.ball.active)) {
-
-            for (let event of this.events.filter(e => e.type == 'pot')) {
-                if (event.ball.color != this.red.color) {
-                    this.returnToTable(event.ball);
-                }
-            }
 
             this.foul();
             return;
