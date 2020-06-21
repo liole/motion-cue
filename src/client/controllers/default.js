@@ -1,4 +1,5 @@
 import dom from './../dom.js';
+import { Ball } from './../objects/ball.js';
 
 export class DefaultController {
 
@@ -10,7 +11,16 @@ export class DefaultController {
 
     attach(game) {
         this.game = game;
+        this.balls = game.balls.map(ball => ball == game.cueBall ? ball : new Ball(ball.radius, ball.color));
+        this.reset();
         return this;
+    }
+
+    reset() {
+        this.events = [];
+        for (let i = 1; i < this.game.balls.length; ++i) {
+            this.game.balls[i].copyTo(this.balls[i]);
+        }
     }
 
     get active() {
@@ -48,7 +58,7 @@ export class DefaultController {
 
         if (type == 'stop') {
             this.process();
-            this.events = [];
+            this.reset();
         } else {
             event.type = type;
             this.events.push(event);
@@ -81,7 +91,7 @@ export class DefaultController {
     }
 
     gameOver() {
-        $alert('GAME OVER', Date.now());
+        $alert('GAME OVER', 1e9);
     }
 
     returnToTable(ball) {

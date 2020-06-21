@@ -22,7 +22,7 @@ export class SnookerController extends DefaultController {
             return this.red;
         }
         if (this.sequence) {
-            return this.game.balls.find(b => b.active && b != this.game.cueBall);
+            return this.balls.find(b => b.active && b != this.game.cueBall);
         }
 
         // TODO: handle nominating a ball
@@ -38,9 +38,7 @@ export class SnookerController extends DefaultController {
         super.process();
 
         if (!this.sequence) {
-            for (let event of this.events.filter(e => e.type == 'pot' && e.ball.color != this.red.color)) {
-                this.returnToTable(event.ball);
-            }
+            this.returnColors();
         }
 
         if (!this.firstBall ||
@@ -50,6 +48,7 @@ export class SnookerController extends DefaultController {
             this.events.some(e => e.type == 'pot' && e.ball == this.game.cueBall) ||
             this.events.some(e => e.type == 'out' && e.ball.active)) {
 
+            this.returnColors();
             this.foul();
             return;
         }
@@ -74,6 +73,12 @@ export class SnookerController extends DefaultController {
 
         if (!this.game.balls.some(b => b.active && b != this.game.cueBall)) {
             this.gameOver();
+        }
+    }
+
+    returnColors() {
+        for (let event of this.events.filter(e => e.type == 'pot' && e.ball.color != this.red.color)) {
+            this.returnToTable(event.ball);
         }
     }
 
