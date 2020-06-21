@@ -31,7 +31,9 @@ To make a shot just do the same motion, as you would if the phone was a real cue
 Multiple players can join a game and play remotely. Players will be represented by their scores in the bottom of the screen.
 Currently in-control player will be shown with white background. Your local score will have a yellow underline. When you are waiting on a remote player to make a shot, his score will be pulsing.
 
-![Snooker shot](https://user-images.githubusercontent.com/8505995/82756081-70449780-9de0-11ea-9344-09827cb72a08.png)
+It is also possible to add multiple players locally using a plus button next to the scores. This will let you manage score and turns of other players, while still using the smae controll and screen for them.
+
+![Snooker shot](https://user-images.githubusercontent.com/8505995/85229691-0970c900-b3f4-11ea-9269-27f4d8377dbc.png)
 
 ## Shortcuts
 - Press the `t` key to start tracing the path of all balls.
