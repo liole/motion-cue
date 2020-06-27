@@ -1,5 +1,6 @@
 import dom from './dom.js';
 import { Game, games } from './game.js';
+import { Settings } from './settings.js';
 
 var socket = io();
 var game = undefined;
@@ -37,6 +38,14 @@ dom('#add-player').on('click', addSecondaryPlayer);
 dom('#full-screen').on('click', e => document.fullscreenElement
     ? document.exitFullscreen()
     : document.body.requestFullscreen());
+
+dom('#settings').on('click', e => dom('#settings-panel').classList.add('show'));
+dom('#close-settings').on('click', e => dom('#settings-panel').classList.remove('show'));
+document.addEventListener('click', e=> {
+    if (!dom('#settings-panel').contains(e.target) && !dom('#settings').contains(e.target)) {
+        dom('#settings-panel').classList.remove('show')
+    }
+});
 
 socket.on('cue', () => dom('#connect-box').hide());
 
@@ -77,8 +86,7 @@ window.addEventListener('keydown', e => {
 window.addEventListener('keyup', e => {
     if (game) {
         if (e.key == 't') {
-            game.triggerTrace();
-            game.queueRender();
+            settings.trace = !settings.trace;
         }
         if (e.key == 'h') {
             game.cueBall.inHand = true;
@@ -86,12 +94,10 @@ window.addEventListener('keyup', e => {
             game.queueRender();
         }
         if (e.key == 'a') {
-            game.cue.showAim = !game.cue.showAim;
-            game.queueRender();
+            settings.aim = !settings.aim;
         }
         if (e.key == 'p') {
-            game.triggerPredict();
-            game.queueRender();
+            settings.predict = !settings.predict;
         }
         if (e.key >= '0' && e.key <= '9') {
             let x = +e.key;
@@ -104,9 +110,7 @@ window.addEventListener('keyup', e => {
             if (x > 5) {
                 k = 1 + (max - 1) * (x - 5) / 4;
             }
-            game.table.pocketRatio = k + Number.EPSILON;
-            game.pushSync();
-            game.queueRender();
+            settings.pocket = k + Number.EPSILON;
         }
         if (e.key == ' ' && spaceStart) {
             var duration = Date.now() - spaceStart;
@@ -156,14 +160,14 @@ function startGame(type, id) {
     game.pushSync = () => socket.emit('sync', game.getSyncState());
     game.render();
     dom('#game-id').innerText = id;
+    window.settings = new Settings(game);
     dom('body').className = 'game';
     showConnectBox();
     window.game = game;
-    requestAnimationFrame(() => {
-        // bug in chrome prevents font rendering: https://bugs.chromium.org/p/chromium/issues/detail?id=336476
-        // temporary workaround
-        dom('body').css({ paddingRight: '1px' });
-    });
+    // bug in chrome prevents font rendering: https://bugs.chromium.org/p/chromium/issues/detail?id=336476
+    // temporary workaround
+    dom('.bottom-bar.right').hide();
+    setTimeout(() => dom('.bottom-bar.right').show(), 100);
 }
 
 async function showConnectBox() {

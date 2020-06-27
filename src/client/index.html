@@ -35,8 +35,30 @@
         <button id="add-player">+</button>
       </div>
       <div class="bottom-bar right">
+        <button class="pure" id="settings"><i class="fas fa-cog"></i></button>
         <div id="game-id"></div>
         <button class="pure" id="full-screen"><i class="fas fa-compress"></i></button>
+      </div>
+      <div id="settings-panel">
+        <div id="close-settings"></div>
+        <h1>Settings</h1>
+        <div class="setting-entry">
+          <input type="checkbox" id="setting-aim"></input>
+          <label for="setting-aim"><u>A</u>IM LINE</label>
+        </div>
+        <div class="setting-entry">
+          <input type="checkbox" id="setting-trace"></input>
+          <label for="setting-trace"><u>T</u>RACE</label>
+        </div>
+        <div class="setting-entry">
+          <input type="checkbox" id="setting-predict"></input>
+          <label for="setting-predict"><u>P</u>REDICT</label>
+        </div>
+        <div class="divider"></div>
+        <div class="setting-entry">
+          <label for="setting-pocket">POCKET SIZE</label>
+          <input type="range" min="0" max="2" step="0.001" value="1" id="setting-pocket"></input>
+        </div>
       </div>
     </div>
 

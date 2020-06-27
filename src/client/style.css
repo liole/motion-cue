@@ -5,6 +5,7 @@ html, body {
     padding: 0px;
     background: repeating-linear-gradient( -45deg, #075, #075 20px, #064 20px, #064 40px );
     font-family: Helvetica, sans-serif;
+    overflow: hidden;
 }
 
 * {
@@ -55,7 +56,7 @@ button {
     cursor: pointer;
 }
 
-button:not(.pure):hover, button:not(.pure):focus, input:focus {
+button:hover, input:focus {
     background-color: #88bb7788;
     box-shadow: 4px 4px 10px #3338;
 }
@@ -74,15 +75,14 @@ button.pure {
     font-size: 30px;
     color: #fff;
     padding: 15px 20px;
-    margin: 0px 20px 0px -20px;
     text-shadow: 3px 3px 5px #444;
     vertical-align: middle;
     outline: none;
 }
 
-button.pure:hover, button.pure:focus {
+button.pure:hover {
     text-shadow: 0px 0px 10px #333;
-    background-color: #88aa8866;
+    box-shadow: inset 4px 4px 10px #3338;
     backdrop-filter: blur(5px);
 }
 
@@ -151,7 +151,7 @@ button.pure:hover, button.pure:focus {
 
 #game-id {
     display: inline-block;
-    padding: 0px 30px;
+    padding: 0px 20px;
     font-size: 40px;
     font-weight: bold;
     color: #fff;
@@ -215,7 +215,7 @@ button.pure:hover, button.pure:focus {
 }
 .bottom-bar.right {
     position: absolute;
-    right: 0px;
+    right: 20px;
     bottom: 0px;
     margin-right: max(0px, calc(50vw - 50vh / 9 * 16));
 }
@@ -255,4 +255,77 @@ button.pure:hover, button.pure:focus {
     100% {
         background-color: #ccffcc66;
     }
+}
+
+#settings-panel {
+    position: absolute;
+    top: 0px;
+    right: -300px;
+    bottom: 0px;
+    transition: right .5s;
+    background-color: #00440088;
+    backdrop-filter: blur(5px);
+    color: #fff;
+    padding: 50px;
+    width: 300px;
+    box-shadow: 0px 0px 10px #333;
+    text-shadow: 1px 1px 5px #444;
+}
+
+#settings-panel.show {
+    right: 0px;
+}
+
+#settings-panel h1 {
+    padding-bottom: 10px;
+    font-size: 38px;
+    border-bottom: dotted 5px;
+}
+
+.setting-entry {
+    font-size: 28px;
+    font-weight: bold;
+    padding: 10px 0px;
+}
+
+.setting-entry input {
+    filter: hue-rotate(-100deg);
+    margin: 10px;
+    transition: none;
+}
+
+.setting-entry input[type=checkbox] {
+    height: 20px;
+    width: 20px;
+}
+.setting-entry input[type=range] {
+    width: calc(100% - 20px);
+    backdrop-filter: none;
+    box-shadow: none;
+    padding: 0px;
+}
+
+.setting-entry input:hover {
+    filter: hue-rotate(-100deg) brightness(1.5);
+}
+
+#settings-panel .divider {
+    margin: 20px 0px;
+    border-bottom: dotted 5px #fff;
+}
+
+label[for=setting-pocket] {
+    display: block;
+    text-align: center;
+}
+
+#close-settings {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    font-size: 32px;
+    cursor: pointer;
+}
+#close-settings::before {
+    content: '\00D7';
 }
