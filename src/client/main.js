@@ -34,6 +34,10 @@ dom('#join-id').on('keyup', e => {
 
 dom('#add-player').on('click', addSecondaryPlayer);
 
+dom('#full-screen').on('click', e => document.fullscreenElement
+    ? document.exitFullscreen()
+    : document.body.requestFullscreen());
+
 socket.on('cue', () => dom('#connect-box').hide());
 
 socket.on('control', event => {
@@ -55,6 +59,13 @@ socket.on('new-player', player => {
         active: false
     });
 })
+
+window.addEventListener('fullscreenchange', e => {
+    var icon = dom('#full-screen i');
+    icon.classList.remove('fa-compress');
+    icon.classList.remove('fa-expand');
+    icon.classList.add(document.fullscreenElement ? 'fa-compress' : 'fa-expand');
+});
 
 var spaceStart = undefined;
 window.addEventListener('keydown', e => {
@@ -148,6 +159,11 @@ function startGame(type, id) {
     dom('body').className = 'game';
     showConnectBox();
     window.game = game;
+    requestAnimationFrame(() => {
+        // bug in chrome prevents font rendering: https://bugs.chromium.org/p/chromium/issues/detail?id=336476
+        // temporary workaround
+        dom('body').css({ paddingRight: '1px' });
+    });
 }
 
 async function showConnectBox() {

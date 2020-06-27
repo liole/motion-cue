@@ -38,7 +38,7 @@ html, body {
     text-align: center;
 }
 
-button, input {
+button:not(.pure), input {
     background-color: #88aa8866;
     color: #fff;
     outline: none;
@@ -55,7 +55,7 @@ button {
     cursor: pointer;
 }
 
-button:hover, button:focus, input:focus {
+button:not(.pure):hover, button:not(.pure):focus, input:focus {
     background-color: #88bb7788;
     box-shadow: 4px 4px 10px #3338;
 }
@@ -68,6 +68,31 @@ button.main, input.main {
     z-index: -1;
 }
 
+button.pure {
+    background-color: transparent;
+    border: none;
+    font-size: 30px;
+    color: #fff;
+    padding: 15px 20px;
+    margin: 0px 20px 0px -20px;
+    text-shadow: 3px 3px 5px #444;
+    vertical-align: middle;
+    outline: none;
+}
+
+button.pure:hover, button.pure:focus {
+    text-shadow: 0px 0px 10px #333;
+    background-color: #88aa8866;
+    backdrop-filter: blur(5px);
+}
+
+.input-icon {
+    position: absolute;
+    z-index: 1;
+    font-size: 45px;
+    padding: 20px;
+    color: #fff;
+}
 
 #board {
     width: min(100%, calc(100vh * 16 / 9));
@@ -116,6 +141,7 @@ button.main, input.main {
 #spin-view-box.focus {
     transform: scale(5) translate(50%, -70%);
     backdrop-filter: blur(1px);
+    max-height: 10vw;
 }
 
 #spin-view {
@@ -124,16 +150,13 @@ button.main, input.main {
 }
 
 #game-id {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    line-height: max(calc(100vh - 50vw), calc(100vh / 9));
+    display: inline-block;
     padding: 0px 30px;
     font-size: 40px;
     font-weight: bold;
     color: #fff;
     text-shadow: 3px 3px 5px #444;
-    margin-right: max(0px, calc(50vw - 50vh / 9 * 16));
+    vertical-align: middle;
 }
 
 #score {
@@ -189,6 +212,12 @@ button.main, input.main {
     display: inline-block;
     vertical-align: top;
     line-height: max(calc(100vh - 50vw), calc(100vh / 9));
+}
+.bottom-bar.right {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    margin-right: max(0px, calc(50vw - 50vh / 9 * 16));
 }
 
 #add-player {
