@@ -7,6 +7,8 @@ export class Settings {
         this.init();
         this.apply();
         this.render();
+        // Prediction is not correct without the event. Don't show it initially
+        this.game.stopPrediction();
     }
 
     get trace() {

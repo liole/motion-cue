@@ -340,13 +340,14 @@ export class Game {
         }
         this.balls.forEach(b => b.render(board));
         this.cue.render(board);
+        
+        this.frame = undefined;
     }
     
     queueRender() {
         if (!this.frame) {
             this.frame = requestAnimationFrame(timestamp => {
                 this.render();
-                this.frame = undefined;
                 let wasMoving = this.isMoving;
                 if (this.simulate(timestamp)) {
                     this.queueRender();
@@ -363,12 +364,17 @@ export class Game {
                     }
                     this.queueRender();
                 }
+                
+                if (this.predict) {
+                    this.predictGame();
+                    if (this.predictedGame && this.predictedGame.frame) {
+                        cancelAnimationFrame(this.predictedGame.frame);
+                        this.predictedGame.render();
+                    }
+                } else {
+                    this.stopPrediction();
+                }
             });
-            if (this.predict) {
-                this.predictGame();
-            } else {
-                this.stopPrediction();
-            }
         }
     }
 
