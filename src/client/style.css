@@ -68,10 +68,13 @@ button.main, input.main {
     z-index: -1;
 }
 
+
 #board {
-    width: 100%;
+    width: min(100%, calc(100vh * 16 / 9));
     height: auto;
     overflow: visible;
+    margin: auto;
+    display: block;
 }
 
 .box {
@@ -104,10 +107,14 @@ button.main, input.main {
     height: calc(100vh - 50vw);
     width: calc(100vh - 50vw);
     transition: all .5s;
+    min-height: calc(100vh / 9);
+    min-width: calc(100vh / 9);
+    max-width: 10vw;
+    margin-left: max(0px, calc(50vw - 50vh / 9 * 16));
 }
 
 #spin-view-box.focus {
-    transform: scale(5) translate(50%, -50%);
+    transform: scale(5) translate(50%, -70%);
     backdrop-filter: blur(1px);
 }
 
@@ -120,18 +127,19 @@ button.main, input.main {
     position: absolute;
     bottom: 0px;
     right: 0px;
-    line-height: calc(100vh - 50vw);
+    line-height: max(calc(100vh - 50vw), calc(100vh / 9));
     padding: 0px 30px;
     font-size: 40px;
     font-weight: bold;
     color: #fff;
     text-shadow: 3px 3px 5px #444;
+    margin-right: max(0px, calc(50vw - 50vh / 9 * 16));
 }
 
 #score {
     display: inline-block;
     vertical-align: top;
-    line-height: calc(100vh - 50vw);
+    line-height: max(calc(100vh - 50vw), calc(100vh / 9));
     padding: 0px 30px;
     font-size: 40px;
     font-weight: bold;
@@ -155,6 +163,7 @@ button.main, input.main {
 
 #score .score.local {
     height: calc(100vh - 50vw - 5px);
+    min-height: calc(100vh / 9);
     border-bottom: solid 5px #ff0;
 }
 
@@ -179,7 +188,7 @@ button.main, input.main {
 .bottom-bar {
     display: inline-block;
     vertical-align: top;
-    line-height: calc(100vh - 50vw);
+    line-height: max(calc(100vh - 50vw), calc(100vh / 9));
 }
 
 #add-player {
@@ -200,6 +209,7 @@ button.main, input.main {
     padding: 25px;
     transition: opacity .5s;
     font-weight: bold;
+    z-index: 999;
 }
 
 #alert.show {

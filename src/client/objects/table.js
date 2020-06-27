@@ -60,7 +60,7 @@ export class Table {
                 style: `fill: ${this.cushions.color}`
             });
             this.$frame = dom.svg('rect', {
-                style: `fill: none; stroke: ${this.frame.color}; stroke-width: ${this.frame.thickness}`
+                style: `fill: none; stroke: ${this.frame.color}; stroke-width: ${this.frame.thickness - 0.05 /* ensure inside the viewport */}`
             });
             for (let rect of [this.$cushions, this.$frame]) {
                 rect.set('x', this.frame.x);
