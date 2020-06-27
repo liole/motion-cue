@@ -278,7 +278,7 @@ button.pure:hover {
 
 #settings-panel h1 {
     padding-bottom: 10px;
-    font-size: 38px;
+    font-size: 42px;
     border-bottom: dotted 5px;
 }
 
@@ -289,7 +289,8 @@ button.pure:hover {
 }
 
 .setting-entry input {
-    filter: hue-rotate(-100deg);
+    box-shadow: none;
+    filter: hue-rotate(-100deg) drop-shadow(1px 1px 5px #444);
     margin: 10px;
     transition: none;
 }
@@ -301,7 +302,6 @@ button.pure:hover {
 .setting-entry input[type=range] {
     width: calc(100% - 20px);
     backdrop-filter: none;
-    box-shadow: none;
     padding: 0px;
 }
 
