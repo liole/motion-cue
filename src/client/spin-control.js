@@ -57,19 +57,38 @@ export class SpinControl {
             this.$ball.set('cy', 50);
             this.$ball.set('r', 50);
 
+            let crossOptions = {
+                style: 'fill: none; stroke: #ccc; stroke-width: 1; stroke-dasharray: 3.03'
+            };
+            this.$cross = [dom.svg('circle', crossOptions), dom.svg('line', crossOptions), dom.svg('line', crossOptions)];
+
+            this.$cross[0].set('cx', 50);
+            this.$cross[0].set('cy', 50);
+            this.$cross[0].set('r', 25);
+
+            this.$cross[1].set('x1', 50);
+            this.$cross[1].set('x2', 50);
+            this.$cross[1].set('y1', 0);
+            this.$cross[1].set('y2', 100);
+
+            this.$cross[2].set('x1', 0);
+            this.$cross[2].set('x2', 100);
+            this.$cross[2].set('y1', 50);
+            this.$cross[2].set('y2', 50);
+
             this.$aim = dom.svg('circle', {
                 style: 'fill: #a22; stroke: #f55; stroke-width: 3'
             });
             this.$aim.set('r', 7);
 
-            root.append(this.$ball, this.$aim);
+            root.append(this.$ball, ...this.$cross, this.$aim);
         }
 
         var point = shift({ x: 50, y: 50 }, this.angle, this.dist * 50);
         this.$aim.set('cx', point.x);
         this.$aim.set('cy', point.y);
 
-        return [this.$ball, this.$aim];
+        return [this.$ball, ...this.$cross, this.$aim];
     }
 
 }
