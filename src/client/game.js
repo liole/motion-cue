@@ -11,7 +11,7 @@ import { PoolController } from './controllers/pool.js';
 
 const syncInverval = 1000;
 const timeStep = 15; // up to 66.66 fps
-const predictRange = 1000;
+const defaultPredictRange = 1000;
 
 export class Game {
 
@@ -29,6 +29,7 @@ export class Game {
         this.table.resetBalls(this.balls);
         this.aimCue(Math.PI / 4);
         this.cueBall.inHand = true;
+        this.predictRange = defaultPredictRange;
     }
 
     get cueBall() {
@@ -179,7 +180,7 @@ export class Game {
             type: 'shot',
             acceleration: 25
         });
-        this.predictedGame.timestamp = performance.now() - predictRange;
+        this.predictedGame.timestamp = performance.now() - this.predictRange;
         this.predictedGame.simulate();
     }
 

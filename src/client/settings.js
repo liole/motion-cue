@@ -47,8 +47,19 @@ export class Settings {
         this.render();
     }
     setPocketNotPush(value) {
+        if (!value) return;
         this.game.table.pocketRatio = value;
         game.queueRender();
+    }
+
+    get predictRange() {
+        return this.game.predictRange;
+    }
+    set predictRange(value) {
+        if (!value) return;
+        this.game.predictRange = value;
+        this.game.queueRender();
+        this.render();
     }
 
     init() {
@@ -58,6 +69,7 @@ export class Settings {
         dom('#setting-pocket').on('change', e => this.pocket = +e.target.value);
         dom('#setting-pocket').on('input', e => this.setPocketNotPush(+e.target.value));
         dom('#setting-pocket').set('min', this.game.cueBall.radius / this.game.table.pockets.radius);
+        dom('#setting-predict-range').on('input', e => this.predictRange = +e.target.value);
     }
 
     apply() {
@@ -71,7 +83,8 @@ export class Settings {
         localStorage.settings = JSON.stringify({
             aim: this.aim,
             trace: this.trace,
-            predict: this.predict
+            predict: this.predict,
+            predictRange: this.predictRange,
         });
     }
 
@@ -87,6 +100,14 @@ export class Settings {
         }
         if (dom('#setting-pocket').value != this.pocket) {
             dom('#setting-pocket').value = this.pocket;
+        }
+        if (this.predict) {
+            dom('#setting-predict-range').show();
+        } else {
+            dom('#setting-predict-range').hide();
+        }
+        if (dom('#setting-predict-range').value != this.predictRange) {
+            dom('#setting-predict-range').value = this.predictRange;
         }
         this.save();
     }
