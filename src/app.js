@@ -101,9 +101,6 @@ io.on('connection', (socket) => {
 });
 
 var port = process.env.PORT || 147;
-var origin = process.env.ORIGIN || `http://localhost:${port}`;
-
-io.origins([ origin ]);
 
 http.listen(port, () => {
     console.log('listening on *:' + port);
